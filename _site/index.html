@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Christine Hou">
+
+<title>BatchSVG_analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">BatchSVG_analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" rel="" target="" aria-current="page">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#spatiallibd-dataset" id="toc-spatiallibd-dataset" class="nav-link" data-scroll-target="#spatiallibd-dataset">SpatialLIBD Dataset</a></li>
+  <li><a href="#feature-selection-comparisons" id="toc-feature-selection-comparisons" class="nav-link" data-scroll-target="#feature-selection-comparisons">Feature Selection Comparisons</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#r-session-information" id="toc-r-session-information" class="nav-link" data-scroll-target="#r-session-information"><code>R</code> session information</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">BatchSVG_analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Christine Hou </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level3">
+<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
+<p>The <code>BatchSVG</code> package implements feature selection using the binomial deviance model. In this vignette, we provide a detailed justification for selecting the binomial deviance model as the most appropriate approach for our method. Through comprehensive comparisons with alternative feature selection models, we demonstrate its advantages in ranking spatially variable genes (SVGs), ensuring reproducibility, and mitigating batch effects.</p>
+</section>
+<section id="spatiallibd-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="spatiallibd-dataset">SpatialLIBD Dataset</h3>
+<p>We chose the dorsolateral prefrontal cortex (DLPFC) dataset available through the <a href="https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-022-08601-w">spatialLIBD</a> package to help determine the appropriate feature selection method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spatialLIBD)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>spatialLIBD_spe <span class="ot">&lt;-</span> <span class="fu">fetch_data</span>(<span class="at">type =</span> <span class="st">"spe"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">colData</span>(spatialLIBD_spe)[,<span class="fu">c</span>(<span class="st">"sample_id"</span>,<span class="st">"subject"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         subject
+sample_id Br5292 Br5595 Br8100
+   151507   4226      0      0
+   151508   4384      0      0
+   151509   4789      0      0
+   151510   4634      0      0
+   151669      0   3661      0
+   151670      0   3498      0
+   151671      0   4110      0
+   151672      0   4015      0
+   151673      0      0   3639
+   151674      0      0   3673
+   151675      0      0   3592
+   151676      0      0   3460</code></pre>
+</div>
+</div>
+<p>We ran the <a href="https://www.nature.com/articles/s41467-023-39748-z">nnSVG</a> model on the spatialLIBD data to identify SVGs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>libd_svg <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/libd-all_nnSVG_p-05-features-df.csv"</span>, </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">row.names =</span> <span class="dv">1</span>, <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(libd_svg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                        source type         gene_id gene_version gene_name
+ENSG00000187608 ensembl_havana gene ENSG00000187608            8     ISG15
+ENSG00000131584 ensembl_havana gene ENSG00000131584           18     ACAP3
+ENSG00000242485 ensembl_havana gene ENSG00000242485            5    MRPL20
+ENSG00000160075 ensembl_havana gene ENSG00000160075           11     SSU72
+ENSG00000078369 ensembl_havana gene ENSG00000078369           17      GNB1
+ENSG00000187730 ensembl_havana gene ENSG00000187730            8     GABRD
+                   gene_source   gene_biotype             gene_search
+ENSG00000187608 ensembl_havana protein_coding  ISG15; ENSG00000187608
+ENSG00000131584 ensembl_havana protein_coding  ACAP3; ENSG00000131584
+ENSG00000242485 ensembl_havana protein_coding MRPL20; ENSG00000242485
+ENSG00000160075 ensembl_havana protein_coding  SSU72; ENSG00000160075
+ENSG00000078369 ensembl_havana protein_coding   GNB1; ENSG00000078369
+ENSG00000187730 ensembl_havana protein_coding  GABRD; ENSG00000187730
+                is_top_hvg    sigma.sq    tau.sq          phi    loglik runtime
+ENSG00000187608       TRUE 0.014755187 0.3356806 9.119204e+00 -42272.79  23.241
+ENSG00000131584      FALSE 0.001055874 0.2868728 6.900461e-02 -37864.96  20.942
+ENSG00000242485      FALSE 0.001656123 0.4411004 1.497840e-02 -48094.96  20.343
+ENSG00000160075      FALSE 0.003069247 0.4646316 1.716212e-03 -49391.53  19.676
+ENSG00000078369      FALSE 0.007099322 0.7113184 3.456360e-07 -59584.20  23.359
+ENSG00000187730      FALSE 0.007227928 0.4965150 1.795660e-04 -51122.73  20.104
+                     mean       var      spcov     prop_sv loglik_lm    LR_stat
+ENSG00000187608 0.3141369 0.3505163 0.38668154 0.042105251 -42543.76 541.936437
+ENSG00000131584 0.2860178 0.2879378 0.11360906 0.003667137 -37868.30   6.688740
+ENSG00000242485 0.4788772 0.4427726 0.08498106 0.003740482 -48098.53   7.151903
+ENSG00000160075 0.5193062 0.4677126 0.10668230 0.006562414 -49401.30  19.526820
+ENSG00000078369 1.0635173 0.7184340 0.07922530 0.009881886 -59605.57  42.730757
+ENSG00000187730 0.5727988 0.5037425 0.14842423 0.014348446 -51165.59  85.727756
+                rank         pval         padj
+ENSG00000187608  167 0.000000e+00 0.000000e+00
+ENSG00000131584 1953 3.528243e-02 4.669999e-02
+ENSG00000242485 1910 2.798878e-02 3.788010e-02
+ENSG00000160075 1282 5.751816e-05 1.159785e-04
+ENSG00000078369  839 5.261797e-10 1.621185e-09
+ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
+</div>
+</div>
+</section>
+<section id="feature-selection-comparisons" class="level3">
+<h3 class="anchored" data-anchor-id="feature-selection-comparisons">Feature Selection Comparisons</h3>
+<section id="eligible-options" class="level4">
+<h4 class="anchored" data-anchor-id="eligible-options">Eligible Options</h4>
+<p>Our feature selection method should incorporate the batch variable to assess per-gene deviance and ranking differences when the model is applied with and without batch correction. To achieve this, we compared three different approaches from two packages, each based on distinct statistical models:</p>
+<ul>
+<li><p><a href="https://www.nature.com/articles/nmeth.2645">scran</a></p>
+<p>The <code>scran</code> package employs a mean-variance modeling framework to identify highly variable genes after normalizing the count matrix. We refer to this method as <strong>mean-variance model</strong>.</p>
+<ul>
+<li><p><code>modelGeneVar()</code>: Estimates per-gene variance by fitting a smooth trend to the mean-variance relationship, accounting for complex noise structures in the data.</p></li>
+<li><p><code>modelGeneVarByPois()</code>: Assumes that the mean-variance relationship primarily arises from technical noise following a Poisson distribution.</p></li>
+</ul></li>
+<li><p><a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02109-w">scry</a></p>
+<p>The <code>scry</code> package implements a deviance-based feature selection approach directly on the raw count matrix. Assumes that genes with no biologically meaningful expression pattern will fit a binomial distribution. We refer to this method as <strong>binomial deviance model</strong>.</p>
+<ul>
+<li><code>devianceFeatureSelect()</code>: The greater the per-gene deviance from this null model, the more likely the expression of said gene is biologically meaningful as a top feature.</li>
+</ul></li>
+</ul>
+</section>
+<section id="required-package-load" class="level4">
+<h4 class="anchored" data-anchor-id="required-package-load">Required package load</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scry)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scran)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SingleCellExperiment)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SummarizedExperiment)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggspavis)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggbreak)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="similarly-identify-svgs-as-highly-ranked-features" class="level4">
+<h4 class="anchored" data-anchor-id="similarly-identify-svgs-as-highly-ranked-features">Similarly Identify SVGs as highly ranked features</h4>
+<p>Our goal is to determine whether SVGs exhibit biased expression according of different batch variables. Therefore, the ideal feature selection model would similarly identify SVGs as highly ranked features.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mv <span class="ot">&lt;-</span> <span class="fu">modelGeneVar</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mv<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>mv<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv)<span class="sc">+</span><span class="dv">1</span>)<span class="sc">-</span><span class="fu">rank</span>(mv<span class="sc">$</span>bio)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv, <span class="at">n =</span> <span class="dv">3000</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>mv<span class="sc">$</span>is_svg <span class="ot">=</span> <span class="fu">factor</span>(mv<span class="sc">$</span>ensembl <span class="sc">%in%</span> libd_svg<span class="sc">$</span>gene_id, </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">levels=</span><span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"SVGs"</span>,<span class="st">"not SVGs"</span>))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>mvpois <span class="ot">&lt;-</span> <span class="fu">modelGeneVarByPoisson</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>mvpois<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mvpois)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>mvpois<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mvpois) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mvpois<span class="sc">$</span>bio)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>top_hvgs_mvpois <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mvpois, <span class="at">n =</span> <span class="dv">3000</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>mvpois<span class="sc">$</span>is_svg <span class="ot">=</span> <span class="fu">factor</span>(mvpois<span class="sc">$</span>ensembl <span class="sc">%in%</span> libd_svg<span class="sc">$</span>gene_id, </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                    <span class="at">levels =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"SVGs"</span>,<span class="st">"not SVGs"</span>))</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>bd <span class="ot">&lt;-</span> <span class="fu">devianceFeatureSelection</span>(<span class="fu">counts</span>(spatialLIBD_spe), <span class="at">fam =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>bd_df <span class="ot">&lt;-</span> <span class="fu">cbind.data.frame</span>(<span class="st">"gene"</span> <span class="ot">=</span> <span class="fu">names</span>(bd),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>            <span class="st">"gene_name"</span> <span class="ot">=</span> <span class="fu">rowData</span>(spatialLIBD_spe)[<span class="fu">names</span>(bd),<span class="st">"gene_name"</span>],</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>            <span class="st">"dev"</span><span class="ot">=</span> bd,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>            <span class="st">"rank"</span> <span class="ot">=</span> (<span class="fu">length</span>(bd)<span class="sc">+</span><span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(bd))</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(bd_df) <span class="ot">&lt;-</span> bd_df<span class="sc">$</span>gene</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>bd_df<span class="sc">$</span>is_svg <span class="ot">=</span> <span class="fu">factor</span>(bd_df<span class="sc">$</span>gene <span class="sc">%in%</span> libd_svg<span class="sc">$</span>gene_id, </span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>                    <span class="at">levels =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"SVGs"</span>,<span class="st">"not SVGs"</span>))</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>bd_batch <span class="ot">&lt;-</span> <span class="fu">devianceFeatureSelection</span>(<span class="fu">counts</span>(spatialLIBD_spe), </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>            <span class="at">fam =</span> <span class="st">"binomial"</span>, <span class="at">batch =</span> <span class="fu">as.factor</span>(spatialLIBD_spe<span class="sc">$</span>subject))</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>bd_batch_df <span class="ot">&lt;-</span> <span class="fu">cbind.data.frame</span>(<span class="st">"gene"</span> <span class="ot">=</span> <span class="fu">rownames</span>(spatialLIBD_spe),</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>            <span class="st">"gene_name"</span> <span class="ot">=</span> <span class="fu">rowData</span>(spatialLIBD_spe)<span class="sc">$</span>gene_name,</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>            <span class="st">"dev"</span><span class="ot">=</span> bd_batch,</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>            <span class="st">"rank"</span> <span class="ot">=</span> (<span class="fu">length</span>(bd_batch)<span class="sc">+</span><span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(bd_batch))</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(bd_batch_df) <span class="ot">&lt;-</span> bd_batch_df<span class="sc">$</span>gene</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>bd_batch_df<span class="sc">$</span>is_svg <span class="ot">=</span> <span class="fu">factor</span>(bd_batch_df<span class="sc">$</span>gene <span class="sc">%in%</span> libd_svg<span class="sc">$</span>gene_id, </span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>            <span class="at">levels =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"SVGs"</span>,<span class="st">"not SVGs"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We found that both <code>modelGeneVar()</code> and <code>modelGeneVarByPoisson()</code> approaches rank a considerable portion of the SVGs as some of the lowest features in the dataset.</p>
+<p><em>Figure 1A. Mean-variance model rank some nnSVG results as low ranked features</em></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/figure 1a print-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>In contrast, all the SVGs are ranked highly with the binomial deviance model (<code>devianceFeatureSelection()</code>). We can also saw that including a subject-batch effect didn’t dramatically change the rank of the SVGs.</p>
+<p><em>Figure 1B. Binomial deviance model better corresponds to nnSVG results</em></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/figure 1b print-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>What’s more, more than 90% of <code>spatialLIBD</code> SVGs are ranked in the top 3000 features by binomial deviance model with and without <code>batch = subject</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(bd_df[libd_svg<span class="sc">$</span>gene_id, <span class="st">"rank"</span>], <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    0%    10%    20%    30%    40%    50%    60%    70%    80%    90%   100% 
+   1.0  200.6  400.2  606.8  830.4 1060.0 1316.8 1601.2 1913.6 2256.8 4077.0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(bd_batch_df[libd_svg<span class="sc">$</span>gene_id, <span class="st">"rank"</span>], <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    0%    10%    20%    30%    40%    50%    60%    70%    80%    90%   100% 
+   1.0  199.2  401.2  606.8  830.4 1060.0 1316.6 1603.2 1917.8 2271.4 5903.0 </code></pre>
+</div>
+</div>
+</section>
+<section id="identify-batch-biased-genes" class="level4">
+<h4 class="anchored" data-anchor-id="identify-batch-biased-genes">Identify batch biased genes</h4>
+<p>Using the <code>modelGeneVar()</code> function, we compared the rank with and without the <code>batch = subject</code> and we noticed that there are two groups of features ranked highly in one model but lowly in another model (top left group and bottom right group).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mv_batch <span class="ot">&lt;-</span> <span class="fu">modelGeneVar</span>(<span class="fu">logcounts</span>(spatialLIBD_spe),</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">block=</span><span class="fu">as.factor</span>(spatialLIBD_spe<span class="sc">$</span>subject))</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>mv_batch<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv_batch)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>mv_batch<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv_batch) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv_batch<span class="sc">$</span>bio)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>mv_rank_diff <span class="ot">&lt;-</span> <span class="fu">left_join</span>(</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.data.frame</span>(mv[,<span class="fu">c</span>(<span class="st">"ensembl"</span>,<span class="st">"mean"</span>,<span class="st">"bio"</span>,<span class="st">"rank"</span>)]),</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.data.frame</span>(mv_batch[,<span class="fu">c</span>(<span class="st">"ensembl"</span>,<span class="st">"mean"</span>,<span class="st">"bio"</span>,<span class="st">"rank"</span>)]),</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>), <span class="at">suffix=</span><span class="fu">c</span>(<span class="st">"_default"</span>,<span class="st">"_subject"</span>))</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>mv_rank_diff<span class="sc">$</span>gene_name <span class="ot">&lt;-</span> </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rowData</span>(spatialLIBD_spe)[mv_rank_diff<span class="sc">$</span>ensembl,<span class="st">"gene_name"</span>]</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>top_3k_mv_batch <span class="ot">&lt;-</span> mv_rank_diff <span class="sc">|&gt;</span> </span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(rank_default <span class="sc">&lt;=</span> <span class="dv">3000</span> <span class="sc">|</span> rank_subject <span class="sc">&lt;=</span> <span class="dv">3000</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">batch_impact =</span> rank_default <span class="sc">&gt;</span> <span class="dv">30000</span> <span class="sc">|</span> rank_subject <span class="sc">&gt;</span> <span class="dv">30000</span>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>top_3k_mv_batch_genes <span class="ot">&lt;-</span> top_3k_mv_batch <span class="sc">|&gt;</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(batch_impact <span class="sc">==</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><em>Fig2A. Comparison of feature rank with and without subject batch</em></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/fig 2a print-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Then, we looked at both groups of genes in red to see if they exhibit true subject-biased expression. Here we used <strong>RAPGEF5</strong> as example.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>RAPGEF5_ensembl <span class="ot">&lt;-</span> top_3k_mv_batch_genes <span class="sc">|&gt;</span> <span class="fu">filter</span>(gene_name <span class="sc">==</span> <span class="st">"RAPGEF5"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(ensembl)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>RAPGEF5_expr <span class="ot">&lt;-</span> <span class="fu">logcounts</span>(spatialLIBD_spe)[RAPGEF5_ensembl, , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>mv_expr_df <span class="ot">&lt;-</span> <span class="fu">cbind.data.frame</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.data.frame</span>(<span class="fu">colData</span>(spatialLIBD_spe)[,<span class="fu">c</span>(<span class="st">"sample_id"</span>,<span class="st">"subject"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"layer_guess_reordered_short"</span>)]),</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">avg.logcounts =</span> <span class="fu">as.vector</span>(RAPGEF5_expr)) <span class="sc">|&gt;</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(sample_id, subject,  layer_guess_reordered_short) <span class="sc">|&gt;</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">avg.logcounts =</span> <span class="fu">mean</span>(avg.logcounts, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(layer_guess_reordered_short))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><em>Fig2B. RAPGEF5 is not subject biased but correlate with WM</em></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/figure 2b print-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>The plot illustrates the average expression of each sample across spatial domains alongside the spatial expression pattern of <strong>RAPGEF5</strong>. The graded expression across cortical layers suggests that <strong>RAPGEF5</strong> is spatially variable, with substantial differences in expression between subjects. However, its spatial expression pattern does not indicate subject bias.</p>
+<p>Thus, the changes in gene ranking when setting <code>batch = subject</code> in the <code>modelGeneVar()</code> function do not effectively identify potentially subject-biased genes.</p>
+</section>
+<section id="reproducibility-in-multiple-runs" class="level4">
+<h4 class="anchored" data-anchor-id="reproducibility-in-multiple-runs">Reproducibility in multiple runs</h4>
+<p>We set the seed to check the reproducibility of each approach.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>devianceFeatureSelection()</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>bd1 <span class="ot">&lt;-</span> <span class="fu">devianceFeatureSelection</span>(<span class="fu">counts</span>(spatialLIBD_spe), <span class="at">fam =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>bd2 <span class="ot">&lt;-</span> <span class="fu">devianceFeatureSelection</span>(<span class="fu">counts</span>(spatialLIBD_spe), <span class="at">fam =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>bd_repro <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">as.data.frame</span>(bd1), <span class="fu">as.data.frame</span>(bd2)) <span class="sc">|&gt;</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">abs_diff_dev_is_zero =</span> (<span class="fu">abs</span>(bd1 <span class="sc">-</span> bd2) <span class="sc">&lt;</span> <span class="fl">1e-10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>modelGeneVar()</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mv1 <span class="ot">&lt;-</span> <span class="fu">modelGeneVar</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>mv2 <span class="ot">&lt;-</span> <span class="fu">modelGeneVar</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>mv1<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv1)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>mv1<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv1) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv1<span class="sc">$</span>bio)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv1 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv1, <span class="at">n =</span> <span class="dv">3000</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>mv1_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv1[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>mv2<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv2)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>mv2<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv2) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv2<span class="sc">$</span>bio)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv2 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv2, <span class="at">n =</span> <span class="dv">3000</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>mv2_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv2[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>mv_repro <span class="ot">&lt;-</span> <span class="fu">left_join</span>(mv1_df, mv2_df,</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">by =</span> <span class="st">"ensembl"</span>, <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">"_1"</span>, <span class="st">"_2"</span>))</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>mv_repro <span class="ot">&lt;-</span> mv_repro <span class="sc">|&gt;</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">abs_diff_var =</span> <span class="fu">abs</span>(bio_1 <span class="sc">-</span> bio_2),</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">abs_diff_var_is_zero =</span> (abs_diff_var <span class="sc">&lt;</span> <span class="fl">1e-10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>modelGeneVarByPoisson()</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mv_pois1 <span class="ot">&lt;-</span> <span class="fu">modelGeneVarByPoisson</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>mv_pois2 <span class="ot">&lt;-</span> <span class="fu">modelGeneVarByPoisson</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>mv_pois1<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv_pois1)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>mv_pois1<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv_pois1) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv_pois1<span class="sc">$</span>bio)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv_pois1 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv_pois1, <span class="at">n =</span> <span class="dv">3000</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>mv_pois1_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv_pois1[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>mv_pois2<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv_pois2)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>mv_pois2<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv_pois2) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv_pois2<span class="sc">$</span>bio)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv_pois2 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv_pois2, <span class="at">n =</span> <span class="dv">3000</span>)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>mv_pois2_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv_pois2[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>mvpois_repro <span class="ot">&lt;-</span> <span class="fu">left_join</span>(mv_pois1_df, mv_pois2_df,</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">by =</span> <span class="st">"ensembl"</span>, <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">"_1"</span>, <span class="st">"_2"</span>))</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>mvpois_repro <span class="ot">&lt;-</span> mvpois_repro <span class="sc">|&gt;</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">abs_diff_var =</span> <span class="fu">abs</span>(bio_1 <span class="sc">-</span> bio_2),</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">abs_diff_var_is_zero =</span> (abs_diff_var <span class="sc">&lt;</span> <span class="fl">1e-10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We observed that the <code>modelGeneVar()</code> function and <code>devianceFeatureSelection()</code> function both produce identical results with different runs, which ensures the reproducibility.</p>
+<p><em>Fig3A. modelGeneVar() and modelGeneVarByPoisson() ensures reproducibility</em></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/figure 3a print-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>However, even with the same seed, the <code>modelGeneVarByPoisson()</code> function does not produce identical variance results, leading to rank fluctuations that can significantly impact the identification of highly variable genes (HVGs).</p>
+<p><em>Fig3B. modelGeneVarByPoisson() causes variance fluctuations (rank changes)</em></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/figure 3b print-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<p>Using the <code>modelGeneVarByPoisson()</code> function does identify some rank differences due to <code>batch = subject</code> but are inconsistent. Compared to <code>modelGeneVar()</code> function, the poisson assumptions for technical variation reduced the number of features that were highly ranked with <code>batch = NULL</code> and highly ranked with <code>batch = subject</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mv_pois_batch <span class="ot">&lt;-</span> <span class="fu">modelGeneVarByPoisson</span>(<span class="fu">logcounts</span>(spatialLIBD_spe),</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">block =</span> <span class="fu">as.factor</span>(spatialLIBD_spe<span class="sc">$</span>subject))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>mv_pois_batch<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv_pois_batch)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>mv_pois_batch<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv_pois_batch) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv_pois_batch<span class="sc">$</span>bio)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>var_diff_pois <span class="ot">&lt;-</span> mvpois_repro <span class="sc">|&gt;</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(<span class="fu">as.data.frame</span>(mv_pois_batch[,<span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"rank"</span>, <span class="st">"bio"</span>)]))</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>var_diff_pois<span class="sc">$</span>gene_name <span class="ot">&lt;-</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rowData</span>(spatialLIBD_spe)[var_diff_pois<span class="sc">$</span>ensembl,<span class="st">"gene_name"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><em>Fig3C. Poisson assumption reduced the number of highly ranked features</em></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/figure 3c print-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<p>Moreover, introducing the batch variable to the <code>modelGeneVarByPoisson()</code> function resulted in inconsistencies that altered the top-ranked features, potentially including genes that are not subject-biased (e.g., <strong>COMMD6</strong>).</p>
+<p><em>Fig3D. Introduction of batch to modelGeneVarByPoisson() causes inconsistencies</em></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/figure 3d print-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<p>Therefore, the inconsistencies in the <code>modelGeneVarByPoisson()</code> function may contribute to its failure in identifying subject-biased genes.</p>
+</section>
+<section id="additional-property-match-dlpfc-cortical-layer" class="level4">
+<h4 class="anchored" data-anchor-id="additional-property-match-dlpfc-cortical-layer">Additional Property: match DLPFC cortical layer</h4>
+<p>A separate but related property of the ideal feature selection model would be to generate a list of top features that are consistent with known DLPFC layer markers and comprise markers of all layer domains. We used the recently published list of <a href="https://www.science.org/doi/10.1126/science.adh1938">DLPFC layer markers</a> to characterize the top 3000 features of the mean-variance and binomial deviance models.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>dlpfc_layer_marker <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/TableS8_filtered-layer-markers.csv"</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">row.names =</span> <span class="dv">1</span>, <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Binomial deviance model</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>top_bd_3k <span class="ot">&lt;-</span> bd_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(rank <span class="sc">&lt;=</span> <span class="dv">3000</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>dlpfc_bd_is <span class="ot">&lt;-</span> <span class="fu">semi_join</span>(</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    dlpfc_layer_marker[,<span class="fu">c</span>(<span class="st">"gene"</span>,<span class="st">"ensembl"</span>,<span class="st">"domain_simple"</span>)], </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    top_bd_3k, <span class="at">by=</span><span class="fu">c</span>(<span class="st">"ensembl"</span><span class="ot">=</span><span class="st">"gene"</span>))</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>dlpfc_bd_not <span class="ot">=</span> <span class="fu">anti_join</span>(</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    top_bd_3k <span class="sc">|&gt;</span> <span class="fu">filter</span>(gene <span class="sc">%in%</span> <span class="fu">setdiff</span>(top_bd_3k<span class="sc">$</span>gene, dlpfc_bd_is<span class="sc">$</span>ensembl)),</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    dlpfc_bd_is, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"gene"</span> <span class="ot">=</span> <span class="st">"ensembl"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="st">"none"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">ensembl =</span> gene, <span class="at">gene =</span> gene_name) <span class="sc">|&gt;</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(ensembl, gene, domain_simple) <span class="co"># not included in DLPFC marker table</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>dlpfc_bd_3k <span class="ot">&lt;-</span> <span class="fu">rbind</span>(dlpfc_bd_is, dlpfc_bd_not) <span class="sc">|&gt;</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple=</span><span class="fu">factor</span>(domain_simple,</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"L1"</span>,<span class="st">"L2"</span>,<span class="st">"L3"</span>,<span class="st">"L4"</span>,<span class="st">"L5"</span>,<span class="st">"L6"</span>,<span class="st">"WM"</span>,<span class="st">"none"</span>)))</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean-variance model</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>top_3k_mv <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv[top_hvgs_mv,]) <span class="sc">|&gt;</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(ensembl)</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>dlpfc_mv_is <span class="ot">=</span> <span class="fu">semi_join</span>(</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>    dlpfc_layer_marker[,<span class="fu">c</span>(<span class="st">"gene"</span>,<span class="st">"ensembl"</span>,<span class="st">"domain_simple"</span>)], </span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>    top_3k_mv, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>gene)</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>dlpfc_mv_not <span class="ot">=</span> <span class="fu">anti_join</span>(</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(top_3k_mv, </span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>        ensembl <span class="sc">%in%</span> <span class="fu">setdiff</span>(top_hvgs_mv, dlpfc_mv_is<span class="sc">$</span>ensembl)), </span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    dlpfc_mv_is, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="st">"none"</span>)</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>dlpfc_mv_3k <span class="ot">=</span> <span class="fu">rbind</span>(dlpfc_mv_is, dlpfc_mv_not) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="fu">factor</span>(domain_simple,</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"L1"</span>,<span class="st">"L2"</span>,<span class="st">"L3"</span>,<span class="st">"L4"</span>,<span class="st">"L5"</span>,<span class="st">"L6"</span>,<span class="st">"WM"</span>,<span class="st">"none"</span>)))</span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean-variance model - Pois</span></span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>top_3k_mvpois <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mvpois[top_hvgs_mvpois,]) <span class="sc">|&gt;</span></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(ensembl)</span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>dlpfc_mvpois_is <span class="ot">=</span> <span class="fu">semi_join</span>(</span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>    dlpfc_layer_marker[,<span class="fu">c</span>(<span class="st">"gene"</span>,<span class="st">"ensembl"</span>,<span class="st">"domain_simple"</span>)], </span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>    top_3k_mvpois, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>gene)</span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>dlpfc_mvpois_not <span class="ot">=</span> <span class="fu">anti_join</span>(</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(top_3k_mvpois, </span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>        ensembl <span class="sc">%in%</span> <span class="fu">setdiff</span>(top_hvgs_mvpois, dlpfc_mvpois_is<span class="sc">$</span>ensembl)), </span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>    dlpfc_mvpois_is, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="st">"none"</span>)</span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a>dlpfc_mvpois_3k <span class="ot">=</span> <span class="fu">rbind</span>(dlpfc_mvpois_is, dlpfc_mvpois_not) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="fu">factor</span>(domain_simple,</span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"L1"</span>,<span class="st">"L2"</span>,<span class="st">"L3"</span>,<span class="st">"L4"</span>,<span class="st">"L5"</span>,<span class="st">"L6"</span>,<span class="st">"WM"</span>,<span class="st">"none"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>These results further supported the selection of the binomial deviance model, as the 3000 most highly ranked features represented significant markers for all DLPFC cortical layers. In contrast, the 3000 most highly ranked features from the mean-variance model were overwhelmingly L1 and white matter (WM) markers.</p>
+<p><em>Fig4. Binomial deviance model better corresponds to known DLPFC layer markers</em></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/figure 4 print-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level3">
+<h3 class="anchored" data-anchor-id="summary">Summary</h3>
+<p><em>Table1. Summary of the evaluation on each approach</em></p>
+<div class="cell">
+<div class="cell-output-display">
+
+<div id="irgwosgprt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#irgwosgprt table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#irgwosgprt thead, #irgwosgprt tbody, #irgwosgprt tfoot, #irgwosgprt tr, #irgwosgprt td, #irgwosgprt th {
+  border-style: none;
+}
+
+#irgwosgprt p {
+  margin: 0;
+  padding: 0;
+}
+
+#irgwosgprt .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#irgwosgprt .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#irgwosgprt .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#irgwosgprt .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#irgwosgprt .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#irgwosgprt .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#irgwosgprt .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#irgwosgprt .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#irgwosgprt .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#irgwosgprt .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#irgwosgprt .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#irgwosgprt .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#irgwosgprt .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#irgwosgprt .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#irgwosgprt .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#irgwosgprt .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#irgwosgprt .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#irgwosgprt .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#irgwosgprt .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#irgwosgprt .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#irgwosgprt .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#irgwosgprt .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#irgwosgprt .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#irgwosgprt .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#irgwosgprt .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#irgwosgprt .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#irgwosgprt .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#irgwosgprt .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#irgwosgprt .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#irgwosgprt .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#irgwosgprt .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#irgwosgprt .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#irgwosgprt .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#irgwosgprt .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#irgwosgprt .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#irgwosgprt .gt_left {
+  text-align: left;
+}
+
+#irgwosgprt .gt_center {
+  text-align: center;
+}
+
+#irgwosgprt .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#irgwosgprt .gt_font_normal {
+  font-weight: normal;
+}
+
+#irgwosgprt .gt_font_bold {
+  font-weight: bold;
+}
+
+#irgwosgprt .gt_font_italic {
+  font-style: italic;
+}
+
+#irgwosgprt .gt_super {
+  font-size: 65%;
+}
+
+#irgwosgprt .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#irgwosgprt .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#irgwosgprt .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#irgwosgprt .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#irgwosgprt .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#irgwosgprt .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#irgwosgprt .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#irgwosgprt .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#irgwosgprt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="Package">Package</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="Function">Function</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="SVGs-as-Highly-Ranked-Features">SVGs as Highly Ranked Features</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="Batch-Biased-Features">Batch Biased Features</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="Reproducibility">Reproducibility</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="DLPFC-layer-marker">DLPFC layer marker</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="Package" class="gt_row gt_center">scry</td>
+<td headers="Function" class="gt_row gt_center">devianceFeatureSelection()</td>
+<td headers="SVGs as Highly Ranked Features" class="gt_row gt_center">✔</td>
+<td headers="Batch Biased Features" class="gt_row gt_center">✔</td>
+<td headers="Reproducibility" class="gt_row gt_center">✔</td>
+<td headers="DLPFC layer marker" class="gt_row gt_center">✔</td></tr>
+    <tr><td headers="Package" class="gt_row gt_center">scran</td>
+<td headers="Function" class="gt_row gt_center">modelGeneVar()</td>
+<td headers="SVGs as Highly Ranked Features" class="gt_row gt_center">✘</td>
+<td headers="Batch Biased Features" class="gt_row gt_center">✘</td>
+<td headers="Reproducibility" class="gt_row gt_center">✔</td>
+<td headers="DLPFC layer marker" class="gt_row gt_center">✘</td></tr>
+    <tr><td headers="Package" class="gt_row gt_center">scran</td>
+<td headers="Function" class="gt_row gt_center">modelGeneVarByPoisson()</td>
+<td headers="SVGs as Highly Ranked Features" class="gt_row gt_center">✘</td>
+<td headers="Batch Biased Features" class="gt_row gt_center">✔</td>
+<td headers="Reproducibility" class="gt_row gt_center">✘</td>
+<td headers="DLPFC layer marker" class="gt_row gt_center">✘</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="r-session-information" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="r-session-information"><code>R</code> session information</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Session info</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.4.2 (2024-10-31)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.3
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/New_York
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] gt_0.11.1                   ggbreak_0.1.4              
+ [3] ggspavis_1.12.0             lubridate_1.9.4            
+ [5] forcats_1.0.0               stringr_1.5.1              
+ [7] dplyr_1.1.4                 purrr_1.0.4                
+ [9] readr_2.1.5                 tidyr_1.3.1                
+[11] tidyverse_2.0.0             tibble_3.2.1               
+[13] ggrepel_0.9.6               gridExtra_2.3              
+[15] ggplot2_3.5.1               scran_1.34.0               
+[17] scuttle_1.16.0              scry_1.18.0                
+[19] spatialLIBD_1.18.0          SpatialExperiment_1.16.0   
+[21] SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0
+[23] Biobase_2.66.0              GenomicRanges_1.58.0       
+[25] GenomeInfoDb_1.42.3         IRanges_2.40.1             
+[27] S4Vectors_0.44.0            BiocGenerics_0.52.0        
+[29] MatrixGenerics_1.18.1       matrixStats_1.5.0          
+
+loaded via a namespace (and not attached):
+  [1] later_1.4.1              BiocIO_1.16.0            ggplotify_0.1.2         
+  [4] bitops_1.0-9             filelock_1.0.3           fields_16.3             
+  [7] XML_3.99-0.18            lifecycle_1.0.4          edgeR_4.4.2             
+ [10] doParallel_1.0.17        lattice_0.22-6           magrittr_2.0.3          
+ [13] limma_3.62.2             plotly_4.10.4            sass_0.4.9              
+ [16] rmarkdown_2.29           jquerylib_0.1.4          yaml_2.3.10             
+ [19] metapod_1.14.0           httpuv_1.6.15            ggside_0.3.1            
+ [22] spam_2.11-1              sessioninfo_1.2.3        cowplot_1.1.3           
+ [25] DBI_1.2.3                RColorBrewer_1.1-3       golem_0.5.1             
+ [28] maps_3.4.2.1             abind_1.4-8              zlibbioc_1.52.0         
+ [31] RCurl_1.98-1.16          yulab.utils_0.2.0        rappdirs_0.3.3          
+ [34] GenomeInfoDbData_1.2.13  irlba_2.3.5.1            dqrng_0.4.1             
+ [37] codetools_0.2-20         DelayedArray_0.32.0      xml2_1.3.7              
+ [40] DT_0.33                  tidyselect_1.2.1         aplot_0.2.5             
+ [43] farver_2.1.2             UCSC.utils_1.2.0         ScaledMatrix_1.14.0     
+ [46] viridis_0.6.5            shinyWidgets_0.9.0       BiocFileCache_2.14.0    
+ [49] GenomicAlignments_1.42.0 jsonlite_1.9.1           BiocNeighbors_2.0.1     
+ [52] scater_1.34.0            iterators_1.0.14         foreach_1.5.2           
+ [55] tools_4.4.2              Rcpp_1.0.14              glue_1.8.0              
+ [58] SparseArray_1.6.2        xfun_0.51                withr_3.0.2             
+ [61] BiocManager_1.30.25      fastmap_1.2.0            bluster_1.16.0          
+ [64] digest_0.6.37            rsvd_1.0.5               gridGraphics_0.5-1      
+ [67] timechange_0.3.0         R6_2.6.1                 mime_0.12               
+ [70] colorspace_2.1-1         RSQLite_2.3.9            config_0.3.2            
+ [73] generics_0.1.3           data.table_1.17.0        rtracklayer_1.66.0      
+ [76] httr_1.4.7               htmlwidgets_1.6.4        S4Arrays_1.6.0          
+ [79] pkgconfig_2.0.3          gtable_0.3.6             blob_1.2.4              
+ [82] XVector_0.46.0           htmltools_0.5.8.1        dotCall64_1.2           
+ [85] scales_1.3.0             png_0.1-8                attempt_0.3.1           
+ [88] ggfun_0.1.8              knitr_1.49               rstudioapi_0.17.1       
+ [91] tzdb_0.4.0               rjson_0.2.23             curl_6.2.1              
+ [94] cachem_1.1.0             BiocVersion_3.20.0       parallel_4.4.2          
+ [97] vipor_0.4.7              AnnotationDbi_1.68.0     restfulr_0.0.15         
+[100] pillar_1.10.1            grid_4.4.2               vctrs_0.6.5             
+[103] promises_1.3.2           BiocSingular_1.22.0      dbplyr_2.5.0            
+[106] beachmat_2.22.0          xtable_1.8-4             cluster_2.1.8           
+[109] beeswarm_0.4.0           paletteer_1.6.0          evaluate_1.0.3          
+[112] magick_2.8.5             cli_3.6.4                locfit_1.5-9.11         
+[115] compiler_4.4.2           Rsamtools_2.22.0         rlang_1.1.5             
+[118] crayon_1.5.3             labeling_0.4.3           rematch2_2.1.2          
+[121] fs_1.6.5                 ggbeeswarm_0.7.2         stringi_1.8.4           
+[124] viridisLite_0.4.2        BiocParallel_1.40.0      munsell_0.5.1           
+[127] Biostrings_2.74.1        lazyeval_0.2.2           Matrix_1.7-2            
+[130] ExperimentHub_2.14.0     benchmarkme_1.0.8        patchwork_1.3.0         
+[133] hms_1.1.3                bit64_4.6.0-1            KEGGREST_1.46.0         
+[136] statmod_1.5.0            shiny_1.10.0             AnnotationHub_3.14.0    
+[139] igraph_2.1.4             memoise_2.0.1            bslib_0.9.0             
+[142] benchmarkmeData_1.0.4    bit_4.6.0               </code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
