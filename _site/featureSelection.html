@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Christine Hou">
 
-<title>BatchSVG_analysis</title>
+<title>BatchSVG_analysis - featureSelection</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -165,19 +164,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">BatchSVG_analysis</h1>
+<h1 class="title">featureSelection</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Christine Hou </p>
-          </div>
-  </div>
     
   
     
@@ -361,7 +354,7 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 </div>
 </section>
 <section id="identify-batch-biased-genes" class="level4">
-<h4 class="anchored" data-anchor-id="identify-batch-biased-genes">Identify batch biased genes</h4>
+<h4 class="anchored" data-anchor-id="identify-batch-biased-genes"><strong>Identify batch biased genes</strong></h4>
 <p>Using the <code>modelGeneVar()</code> function, we compared the rank with and without the <code>batch = subject</code> and we noticed that there are two groups of features ranked highly in one model but lowly in another model (top left group and bottom right group).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mv_batch <span class="ot">&lt;-</span> <span class="fu">modelGeneVar</span>(<span class="fu">logcounts</span>(spatialLIBD_spe),</span>

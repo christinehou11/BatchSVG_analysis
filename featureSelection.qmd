@@ -1,7 +1,6 @@
 ---
-title: "BatchSVG_analysis"
-author: 
-  - name: Christine Hou
+title: "featureSelection"
+format: html
 ---
 
 ### Introduction
@@ -180,7 +179,7 @@ quantile(bd_df[libd_svg$gene_id, "rank"], probs = seq(0, 1, 0.1))
 quantile(bd_batch_df[libd_svg$gene_id, "rank"], probs = seq(0, 1, 0.1))
 ```
 
-#### Identify batch biased genes
+#### **Identify batch biased genes**
 
 Using the `modelGeneVar()` function, we compared the rank with and without the `batch = subject` and we noticed that there are two groups of features ranked highly in one model but lowly in another model (top left group and bottom right group).
 
