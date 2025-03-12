@@ -6,7 +6,7 @@ website:
   title: "BatchSVG_analysis"
   navbar:
     left:
-      - href: about.qmd
+      - href: index.qmd
         text: Home
       - href: featureSelection.qmd
         text: Why

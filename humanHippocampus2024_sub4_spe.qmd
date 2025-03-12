@@ -54,6 +54,7 @@ library(tidyr)
 library(dplyr)
 library(tibble)
 library(cowplot)
+library(here)
 ```
 
 #### Data
@@ -117,7 +118,7 @@ We will refine our selection to include only the top 2,000 ranked features (rank
 After applying these criteria, we obtain 2,082 spatially variable genes across the four samples.
 
 ```{r load svgs_sub4, message=FALSE, warning=FALSE, comment=NA}
-load("data/nnSVG_outs_HE_only.rda")
+load(here("data/nnSVG_outs_HE_only.rda"))
 
 res_df_sub <- pivot_longer(
     rownames_to_column(as.data.frame(res_ranks), var<-"gene_id"), 
