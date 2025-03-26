@@ -152,9 +152,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#before-batchsvg-implementation" id="toc-before-batchsvg-implementation" class="nav-link" data-scroll-target="#before-batchsvg-implementation">Before <code>BatchSVG</code> implementation</a></li>
-  <li><a href="#batchsvg-implementation" id="toc-batchsvg-implementation" class="nav-link" data-scroll-target="#batchsvg-implementation"><code>BatchSVG</code> implementation</a></li>
-  <li><a href="#after-batchsvg-implementation" id="toc-after-batchsvg-implementation" class="nav-link" data-scroll-target="#after-batchsvg-implementation">After <code>BatchSVG</code> implementation</a></li>
+  <li><a href="#select-spatially-variable-genes" id="toc-select-spatially-variable-genes" class="nav-link" data-scroll-target="#select-spatially-variable-genes">Select Spatially Variable Genes</a></li>
+  <li><a href="#implement-batchsvg" id="toc-implement-batchsvg" class="nav-link" data-scroll-target="#implement-batchsvg">Implement <code>BatchSVG</code></a></li>
   <li><a href="#r-session-information" id="toc-r-session-information" class="nav-link" data-scroll-target="#r-session-information"><code>R</code> session information</a></li>
   </ul>
 </nav>
@@ -181,7 +180,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="introduction" class="level3">
 <h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
-<p>In this section, we will include biased feature identification analysis using our developed method to show how <code>BatchSVG</code> helps to detect and visualize the biased features in SVGs. We will use the `spatially-resolved transcriptomics (SRT) dataset from the <a href="https://research.libd.org/spatialLIBD/">spatialLIBD</a> package.</p>
+<p>In this section, we included biased feature identification analysis using our developed method to show how <code>BatchSVG</code> helps to detect and visualize the biased features in SVGs. We used the spatially-resolved transcriptomics (SRT) dataset from the <a href="https://research.libd.org/spatialLIBD/">spatialLIBD</a> package.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spatialLIBD)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nnSVG)</span>
@@ -222,9 +221,9 @@ sample_id Br5292 Br5595 Br8100
 </div>
 </div>
 </section>
-<section id="before-batchsvg-implementation" class="level3">
-<h3 class="anchored" data-anchor-id="before-batchsvg-implementation">Before <code>BatchSVG</code> implementation</h3>
-<p>We will use the spatially variable genes set generated. The result is generated from <a href="https://www.nature.com/articles/s41467-023-39748-z">nnSVG</a> package.</p>
+<section id="select-spatially-variable-genes" class="level3">
+<h3 class="anchored" data-anchor-id="select-spatially-variable-genes">Select Spatially Variable Genes</h3>
+<p>We used the spatially variable genes set generated. The result was generated from <a href="https://www.nature.com/articles/s41467-023-39748-z">nnSVG</a> package.</p>
 <section id="preprocessing" class="level4">
 <h4 class="anchored" data-anchor-id="preprocessing">Preprocessing</h4>
 <div class="cell">
@@ -321,7 +320,7 @@ FALSE
 <span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>  res_list[[s]] <span class="ot">&lt;-</span> <span class="fu">rowData</span>(spe_sub)</span>
 <span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Then, combine the results across multiple samples by averaging the ranks of the SVGs following the steps showing in the <code>nnSVG</code> <a href="https://github.com/lmweber/nnSVG/blob/4e6427e58e6c77119d1d74237c540abc6bfa8713/vignettes/nnSVG.Rmd#L476">vignette</a>.</p>
+<p>Then, we combined the results across multiple samples by averaging the ranks of the SVGs following the steps showing in the <code>nnSVG</code> <a href="https://github.com/lmweber/nnSVG/blob/4e6427e58e6c77119d1d74237c540abc6bfa8713/vignettes/nnSVG.Rmd#L476">vignette</a>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># number of genes that passed filtering (and subsampling) for each sample</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(res_list, nrow)</span>
@@ -388,8 +387,8 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 </div>
 </section>
 </section>
-<section id="batchsvg-implementation" class="level3">
-<h3 class="anchored" data-anchor-id="batchsvg-implementation"><code>BatchSVG</code> implementation</h3>
+<section id="implement-batchsvg" class="level3">
+<h3 class="anchored" data-anchor-id="implement-batchsvg">Implement <code>BatchSVG</code></h3>
 <section id="installation" class="level4">
 <h4 class="anchored" data-anchor-id="installation">Installation</h4>
 <p>(After accepted in <a href="https://bioconductor.org/">Bioconductor</a>).</p>
@@ -466,7 +465,7 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 </section>
 <section id="batchsvgbiasdetect-identify-biased-genes" class="level4">
 <h4 class="anchored" data-anchor-id="batchsvgbiasdetect-identify-biased-genes"><code>BatchSVG::biasDetect()</code>: Identify Biased Genes</h4>
-<p>Using <code>nSD_svg()</code> function, we determined that <code>nSD_dev = 4</code> and <code>nSD_rank = 6</code>. Then, we can applied <code>biasDetect()</code> function on <code>spe</code> object to identify and filter out biased genes. We used both thresholds (<code>threshold = "both"</code>) and customized the plot color (<code>plot_palette = "RdPu"</code>), the point shape and shape (<code>plot_point_shape = 23</code>), and the text size for biased genes (<code>plot_text_size = 4</code>).</p>
+<p>Using <code>nSD_svg()</code> function, we determined that <code>nSD_dev = 4</code> and <code>nSD_rank = 6</code>. Then, we applied <code>biasDetect()</code> function on <code>spe</code> object to identify and filter out biased genes. We used both thresholds (<code>threshold = "both"</code>) and customized the plot color (<code>plot_palette = "RdPu"</code>), the point shape and shape (<code>plot_point_shape = 23</code>), and the text size for biased genes (<code>plot_text_size = 4</code>).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>bias_both <span class="ot">&lt;-</span> <span class="fu">biasDetect</span>(<span class="at">list_batch_df =</span> list_batch_df, <span class="at">threshold =</span> <span class="st">"both"</span>,</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">nSD_dev =</span> <span class="dv">4</span>, <span class="at">nSD_rank =</span> <span class="dv">7</span>, <span class="at">plot_point_shape =</span> <span class="dv">23</span>, <span class="at">plot_palette =</span> <span class="st">"RdPu"</span>,</span>
@@ -495,9 +494,6 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 </div>
 </div>
 </section>
-</section>
-<section id="after-batchsvg-implementation" class="level3">
-<h3 class="anchored" data-anchor-id="after-batchsvg-implementation">After <code>BatchSVG</code> implementation</h3>
 <section id="subject-related-biased-features" class="level4">
 <h4 class="anchored" data-anchor-id="subject-related-biased-features">Subject-related biased features</h4>
 <p>Two identified biased features are <strong>MTRNR2L1</strong> and <strong>MTRNR2L8</strong>. Spatial expression plots illustrate that these features display strong subject-biased expression and are also clearly enriched in certain spatial domains. <strong>MTRNR2L1</strong> and <strong>MTRNR2L8</strong> are perfect examples of features that may introduce noise if included in spatial domain clustering.</p>
@@ -526,7 +522,7 @@ Adding another scale for colour, which will replace the existing scale.</code></
 </section>
 <section id="refined-svgs" class="level4">
 <h4 class="anchored" data-anchor-id="refined-svgs">Refined SVGs</h4>
-<p>Finally, we obtain a refined set of spatially variable genes (SVGs) by removing the identified outliers based on user-defined thresholds for <code>nSD_dev</code> and <code>nSD_rank</code>.</p>
+<p>Finally, we obtained a refined set of spatially variable genes (SVGs) by removing the identified outliers based on user-defined thresholds for <code>nSD_dev</code> and <code>nSD_rank</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>bias_both_df <span class="ot">&lt;-</span> bias_both<span class="sc">$</span>subject<span class="sc">$</span>Table</span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>svgs_filt <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(res_ranks_LIBD<span class="sc">$</span>gene_id, bias_both_df<span class="sc">$</span>gene_id)</span>

@@ -67,7 +67,7 @@ We refined our selection to include only the top 2,000 ranked features (rank $\l
 
 After applying these criteria, we obtain 2,082 spatially variable genes across the four samples.
 
-```{r load res_ranks, message=FALSE, warning=FALSE, comment=NA}
+```{r load res_ranks subset, message=FALSE, warning=FALSE, comment=NA}
 res_df_sub <- pivot_longer(
     rownames_to_column(as.data.frame(res_ranks), var<-"gene_id"), 
         colnames(res_ranks), 
