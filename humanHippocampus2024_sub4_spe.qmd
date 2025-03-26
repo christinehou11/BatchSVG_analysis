@@ -1,23 +1,7 @@
 ---
-title: "Find Batch-biased Features in SVGs"
-package: "BatchSVG"
-author:
-  - name: "Christine Hou"
-    affiliation: Department of Biostatistics, Johns Hopkins University
-    email: chris2018hou@gmail.com
-output: BiocStyle::html_document
-vignette: >
-  %\VignetteIndexEntry{01 Tutorial for spe data object}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+title: "humanHippocampus2024 Dataset"
+format: html
 ---
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>"
-)
-```
 
 ### Introduction
 
@@ -65,29 +49,9 @@ We will use the `spatially-resolved transcriptomics (SRT)` dataset from the adja
 
 ```{r load data, comment=NA, warning=FALSE, message=FALSE}
 ehub <- ExperimentHub()
-
-# Load the datasets of the package
-# myfiles <- query(ehub, "humanHippocampus2024")
-# Resulting humanHippocampus2024 datasets from ExperimentHub query
-# myfiles
-# ExperimentHub with 2 records
-# # snapshotDate(): 2024-10-24
-# # $dataprovider: Lieber Institute for Brain Development (LIBD)
-# # $species: Homo sapiens
-# # $rdataclass: SpatialExperiment, SingleCellExperiment
-# # additional mcols(): taxonomyid, genome, description,
-# #   coordinate_1_based, maintainer, rdatadateadded, preparerclass, tags,
-# #   rdatapath, sourceurl, sourcetype 
-# # retrieve records with, e.g., 'object[["EH9605"]]' 
-# 
-#            title
-#   EH9605 | spe  
-#   EH9606 | sce
-#   
-# spe <- myfiles[["EH9605"]]
-
 spe <- ehub[["EH9605"]]
-spe
+
+dim(spe)
 ```
 
 We will use the spatially variable genes set generated from [spatial_HPC](https://github.com/LieberInstitute/spatial_hpc) project. The result is generated from [nnSVG]((https://www.nature.com/articles/s41467-023-39748-z)) package.
@@ -108,9 +72,11 @@ fix_order <- distinct(
     position, sex) %>% 
     arrange(slide, array)
 sub4 <- fix_order$sample_id[c(14,16, 20,21)]
-
 spe_sub4 <- spe[,spe$sample_id %in% sub4]
-spe_sub4 # 31483, 18945
+
+dim(spe_sub4)
+
+table(colData(spe_sub4)[,c("sample_id","slide")])
 ```
 
 We will refine our selection to include only the top 2,000 ranked features (rank$\leq$ 2000) and only genes that appear in more than one sample (n \> 1).

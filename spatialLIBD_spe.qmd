@@ -1,13 +1,184 @@
 ---
-title: "spatialLIBD_spe"
+title: "spatialLIBD Dataset"
 format: html
 ---
 
 ### Introduction
 
-`BatchSVG` is the R/Bioconductor package for spatial transcriptomics data quality control (QC). As the feature-based QC method, the package provides functions to identify the biased features associated with the batch effect(s) (e.g. sample, slide, and sex) in spatially variable genes (SVGs) using binomial deviance model, aiming to develop the downstream clustering performances and remove the technical noises caused by batch effects. The package works with [SpatialExperiment](https://github.com/drighelli/SpatialExperiment) objects.
+In this section, we will include biased feature identification analysis using our developed method to show how `BatchSVG` helps to detect and visualize the biased features in SVGs. We will use the \`spatially-resolved transcriptomics (SRT) dataset from the [spatialLIBD](https://research.libd.org/spatialLIBD/) package.
 
-### Installation
+```{r load packages, message=FALSE, warning=FALSE}
+library(spatialLIBD)
+library(nnSVG)
+library(scater)
+library(here)
+library(PRECAST)
+library(Seurat)
+library(BatchSVG)
+```
+
+The `spatialLIBD` dataset was collected from the brain region of dorsolateral prefontal cortex (dlPFC) and was also sequenced with 10X Visium. This dataset has 3 subjects and 4 samples from each subject. Because there was no slide metadata available, we investigated whether `batch = subject` influenced the top features.
+
+```{r load data, comment=NA, warning=FALSE, message=FALSE}
+# load example dataset from spatialLIBD package
+# see '?spatialLIBD' for more details
+spatialLIBD_spe <- fetch_data(type = "spe")
+
+dim(spatialLIBD_spe)
+
+table(colData(spatialLIBD_spe)[,c("sample_id","subject")])
+```
+
+### Before `BatchSVG` implementation
+
+We will use the spatially variable genes set generated. The result is generated from [nnSVG](https://www.nature.com/articles/s41467-023-39748-z) package.
+
+#### Preprocessing
+
+```{r nnsvg preprocessing, message=FALSE, warning=FALSE}
+# see '?nnSVG' for more details
+
+# keep only spots over tissue
+spatialLIBD_spe_1 <- spatialLIBD_spe[, colData(spatialLIBD_spe)$in_tissue == 1]
+dim(spatialLIBD_spe_1) # 33538 47681
+
+# filter any new zeros created
+# remove genes with zero expression
+ix_zero_genes <- rowSums(counts(spatialLIBD_spe_1)) == 0
+table(ix_zero_genes)
+if (sum(ix_zero_genes) > 0) {
+  spatialLIBD_spe_2 <- spatialLIBD_spe_1[!ix_zero_genes, ]
+}
+dim(spatialLIBD_spe_2) # 25615 47681
+
+# remove spots with zero expression
+ix_zero_spots <- colSums(counts(spatialLIBD_spe_2)) == 0
+table(ix_zero_spots)
+if (sum(ix_zero_spots) > 0) {
+  spatialLIBD_spe_3 <- spatialLIBD_spe_2[, !ix_zero_spots]
+}
+# ix_zero_spots
+# FALSE 
+# 47681
+spatialLIBD_spe_filtered <- spatialLIBD_spe_2
+dim(spatialLIBD_spe_filtered)
+
+sample_ids <- levels(factor(colData(spatialLIBD_spe_filtered)$sample_id))
+sample_ids
+```
+
+#### Run `nnSVG` per sample and store lists of top SVGs
+
+```{r nnsvg per sample, eval=FALSE}
+# Here we offer a pseducode example demonstrating how to run `nnSVG` for multiple samples.
+
+res_list <- as.list(rep(NA, length(sample_ids)))
+names(res_list) <- sample_ids
+
+for (s in seq_along(sample_ids[1:2])) {
+  
+  # select sample
+  ix <- colData(spatialLIBD_spe_filtered)$sample_id == sample_ids[s]
+  spe_sub <- spatialLIBD_spe_filtered[, ix]
+  dim(spe_sub)
+  
+  # run nnSVG filtering for mitochondrial genes and low-expressed genes
+  spe_sub <- filter_genes(
+    spe_sub, 
+    filter_genes_ncounts = 3, 
+    filter_genes_pcspots = 0.5, 
+    filter_mito = TRUE
+  )
+  
+  # remove any zeros introduced by filtering
+  ix_zeros <- colSums(counts(spe_sub)) == 0
+  if (sum(ix_zeros) > 0) {
+    spe_sub <- spe_sub[, !ix_zeros]
+  }
+  dim(spe_sub)
+  
+  # re-calculate logcounts after filtering
+  spe_sub <- computeLibraryFactors(spe_sub)
+  spe_sub <- logNormCounts(spe_sub)
+  
+  # run nnSVG
+  set.seed(123)
+  spe_sub <- nnSVG(spe_sub)
+  
+  # store results for this sample
+  res_list[[s]] <- rowData(spe_sub)
+}
+```
+
+Then, combine the results across multiple samples by averaging the ranks of the SVGs following the steps showing in the `nnSVG` [vignette](https://github.com/lmweber/nnSVG/blob/4e6427e58e6c77119d1d74237c540abc6bfa8713/vignettes/nnSVG.Rmd#L476).
+
+```{r nnsvg combine, eval=FALSE}
+# number of genes that passed filtering (and subsampling) for each sample
+sapply(res_list, nrow)
+
+# match results from each sample and store in matching rows
+res_ranks_LIBD <- matrix(NA, nrow = nrow(spatialLIBD_spe_filtered), ncol = length(sample_ids))
+rownames(res_ranks_LIBD) <- rownames(spatialLIBD_spe_filtered)
+colnames(res_ranks_LIBD) <- sample_ids
+
+for (s in seq_along(sample_ids)) {
+  stopifnot(colnames(res_ranks_LIBD)[s] == sample_ids[s])
+  stopifnot(colnames(res_ranks_LIBD)[s] == names(res_list)[s])
+  
+  rownames_s <- rownames(res_list[[s]])
+  res_ranks_LIBD[rownames_s, s] <- res_list[[s]][, "rank"]
+}
+
+# remove genes that were filtered out in all samples
+ix_allna <- apply(res_ranks_LIBD, 1, function(r) all(is.na(r)))
+res_ranks_LIBD <- res_ranks_LIBD[!ix_allna, ]
+head(res_ranks_LIBD)
+```
+
+```{r load nnsvg, comment=NA, warning=FALSE, message=FALSE, echo=FALSE}
+res_ranks_LIBD <- read.csv(here("data/libd-all_nnSVG_p-05-features-df.csv"),
+    row.names = 1, check.names = FALSE)
+
+nrow(res_ranks_LIBD)
+
+head(res_ranks_LIBD)
+```
+
+#### Clustering
+
+```{r clustering before, comment=NA, message=FALSE, warning=FALSE, eval=FALSE}
+l2 = unique(spatialLIBD_spe_filtered$subject)
+names(l2) = l2
+l2 = lapply(l2, function(x) spatialLIBD_spe_filtered[,colData(spatialLIBD_spe_filtered)$subject==x])
+
+srt.sets = lapply(l2, function(x) {
+  colnames(counts(x)) <- rownames(colData(x))
+  colData(x)$col <- x$array_col
+  colData(x)$row <- x$array_row
+  count <- counts(x)
+  a1 <- CreateAssayObject(count, assay = "RNA", min.features = 0, min.cells = 0)
+  CreateSeuratObject(a1, meta.data = as.data.frame(colData(x)))
+})
+
+#run precast
+preobj <- CreatePRECASTObject(seuList = srt.sets,
+                              customGenelist=rownames(spatialLIBD_spe_filtered),
+                              premin.spots=0, premin.features=0, postmin.spots=0, postmin.features=0)
+PRECASTObj <- AddAdjList(preobj, platform = "Visium")
+PRECASTObj <- AddParSetting(PRECASTObj, maxIter = 20, verbose = TRUE, Sigma_equal=FALSE, coreNum=12)
+PRECASTObj <- PRECAST(PRECASTObj, K=7)
+
+#consolidate/ reformat results
+PRECASTObj <- SelectModel(PRECASTObj, criteria="MBIC")
+seuInt <- IntegrateSpaData(PRECASTObj, species = "Human")
+
+write.csv(seuInt@meta.data, "findBiasedFeatures/processed-data/seuInt-hpc_k-7_svgs_metadata.csv", row.names=T)
+```
+
+
+### `BatchSVG` implementation
+
+#### Installation
 
 (After accepted in [Bioconductor](https://bioconductor.org/)).
 
@@ -24,50 +195,13 @@ Install the development version from [GitHub](https://christinehou11.github.io/B
 remotes::install("christinehou11/BatchSVG")
 ```
 
-### Biased Feature Identification
+#### `BatchSVG::featureSelect()`: Perform Feature Selection
 
-In this section, we will include the standard workflow for using `BatchSVG` to show how the method help to detect and visualize the biased features in SVGs.
-
-```{r library, message=FALSE}
-library(BatchSVG)
-library(spatialLIBD)
-library(cowplot)
-library(here)
-```
-
-#### Data
-
-We will use the\`spatially-resolved transcriptomics (SRT) dataset from the [spatialLIBD](https://research.libd.org/spatialLIBD/) package.
-
-```{r load data, comment=NA, warning=FALSE, message=FALSE}
-spatialLIBD_spe <- fetch_data(type = "spe")
-spatialLIBD_spe
-```
-
-We will use the spatially variable genes set generated. The result is generated from [nnSVG]((https://www.nature.com/articles/s41467-023-39748-z)) package.
-
-```{r load nnsvg, comment=NA, warning=FALSE, message=FALSE}
-libd_nnsvgs <- read.csv(here("data/libd-all_nnSVG_p-05-features-df.csv"),
-    row.names = 1, check.names = FALSE)
-```
-
-#### Perform Feature Selection using `featureSelect()`
-
-We will perform feature selection on the spatial transcriptomics data (*input*) using a predefined set of spatially variable genes (*VGs*). Specifically, we will compute the number of standard deviations for the relative change in deviance (**nSD_dev\_{batch effect}**) and rank difference (**nSD_rank\_{batch effect}**) before and after adjusting for batch effects.
-
-The `featureSelect()` function enables feature selection while accounting for multiple batch effects. It returns a **list** of data frames, where each batch effect is associated with a corresponding data frame containing key results, including:
-
--   Relative change in deviance before and after batch effect adjustment
-
--   Rank differences between the batch-corrected and uncorrected results
-
--   Number of standard deviations (nSD) for both relative change in deviance and rank difference
-
-We will use the example of applying `featureSelect()` to the sample dataset while adjusting for the batch effect of *subject*.
+We first applied `featureSelect()` function from `BatchSVG` package to compute the number of standard deviations for the relative change in deviance (**nSD_dev_subject**) and rank difference (**nSD_rank_subject**) for `batch = subject`.
 
 ```{r feature select, comment = NA, warning=FALSE}
 list_batch_df <- featureSelect(input = spatialLIBD_spe, 
-    batch_effect = "subject", VGs = libd_nnsvgs$gene_id)
+    batch_effect = "subject", VGs = res_ranks_LIBD$gene_id)
 ```
 
 ```{r feature select class, comment = NA, warning=FALSE}
@@ -78,15 +212,14 @@ class(list_batch_df)
 head(list_batch_df$subject)
 ```
 
-#### Visualize SVG Selection Using `svg_nSD` for Batch Effects
+#### `BatchSVG::svg_nSD()`: Visualize SVG Selection for Batch Effect(s)
 
-The `svg_nSD()` function generates visualizations to assess batch effects in spatially variable genes (SVGs). It produces bar charts showing the distribution of SVGs based on relative change in deviance and rank difference, with colors representing different nSD intervals. Additionally, scatter plots compare deviance and rank values with and without batch effects.
+We utilized `svg_nSD()` function to generate visualizations for batch effects 
+assessments in spatially variable genes (SVGs). 
 
-By interpreting these plots, we can determine appropriate nSD thresholds for filtering biased features. The left panels illustrate the distribution of SVGs in terms of deviance and rank difference, while the right panels compare values before and after accounting for batch effects.
-
-```{r svg, comment=NA, warning=FALSE, message=FALSE}
+```{r svg_nSD, comment=NA, warning=FALSE, message=FALSE}
 plots <- svg_nSD(list_batch_df = list_batch_df, 
-            sd_interval_dev = 3, sd_interval_rank = 3)
+            sd_interval_dev = 4, sd_interval_rank = 6)
 ```
 
 *Figure 1. Visualizations of nSD_dev and nSD_rank threshold selection*
@@ -95,125 +228,52 @@ plots <- svg_nSD(list_batch_df = list_batch_df,
 plots$subject
 ```
 
-#### Identify Biased Genes Using `biasDetect()`
+#### `BatchSVG::biasDetect()`: Identify Biased Genes
 
-The function `biasDetect()` is designed to identify and filter out biased genes across different batch effects. Using threshold values selected from the visualization results generated by `svg_nSD()`, this function systematically detects outliers that exceed a specified number of standard deviation (nSD) threshold in either relative deviance change, rank difference, or both.
+Using `nSD_svg()` function, we determined that `nSD_dev = 4` and `nSD_rank = 6`. 
+Then, we can applied `biasDetect()` function on `spe` object to identify and 
+filter out biased genes. We used both thresholds (`threshold = "both"`) and 
+customized the plot color (`plot_palette = "RdPu"`), the point shape
+and shape (`plot_point_shape = 23`), and the text size for biased genes 
+(`plot_text_size = 4`).
 
-The function outputs visualizations comparing deviance and rank values with and without batch effects. Genes with high deviations, highlighted in color, are identified as potentially biased and can be excluded based on the selected nSD thresholds.
-
-The function offers flexibility in customizing the plot aesthetics, allowing users to adjust the data point size (**plot_point_size**), shape (**plot_point_shape**), annotated text size (**plot_text_size**), and data point color palette (**plot_palette**). Default values are provided for these parameters if not specified. Users should refer to [ggplot2](https://ggplot2.tidyverse.org/index.html) aesthetic guidelines to ensure appropriate values are assigned for each parameter.
-
-We will use `nSD_dev = 3` and `nSD_rank = 3` as the example. The user should adjust the value based on their dataset features.
-
-**Usage of Different Threshold Options**
-
--   `threshold = "dev"`: Filters biased genes based only on the relative change in deviance. Genes with deviance changes exceeding the specified `nSD_dev` threshold are identified as batch-affected and can be removed.
-
-```{r bias detect dev, comment = NA, message=FALSE, warning=FALSE}
-bias_dev <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "dev", nSD_dev = 3)
+```{r biasDetect, comment = NA, message=FALSE, warning=FALSE}
+bias_both <- biasDetect(list_batch_df = list_batch_df, threshold = "both",
+    nSD_dev = 4, nSD_rank = 6, plot_point_shape = 23, plot_palette = "RdPu",
+    plot_text_size = 4)
 ```
 
-*Table 1. Outlier Genes defined by nSD_dev only*
+*Table 1. Outlier Genes defined by nSD_dev and nSD_rank*
 
 ```{r table 1, comment = NA, message=FALSE, warning=FALSE}
-head(bias_dev$subject$Table)
-```
-
-We can change the data point size using **plot_point_size**.
-
-```{r size change, message=FALSE, warning=FALSE}
-# size default = 3
-bias_dev_size <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "dev", nSD_dev = 3, plot_point_size = 4)
-```
-
-*Figure 2. Customize point size*
-
-```{r figure 2, warning=FALSE, message=FALSE, fig.width= 10, fig.height=4}
-plot_grid(bias_dev$subject$Plot, bias_dev_size$subject$Plot)
-```
-
--   `threshold = "rank"`: Identifies biased genes based solely on rank difference. Genes with rank shifts exceeding `nSD_rank` are considered biased.
-
-```{r bias detect rank, comment = NA, message=FALSE, warning=FALSE}
-bias_rank <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "rank", nSD_rank = 3)
-```
-
-*Table 2. Outlier Genes defined by nSD_rank only*
-
-```{r table 2, comment = NA, message=FALSE, warning=FALSE}
-head(bias_rank$subject$Table)
-```
-
-We can change the data point shape using **plot_point_shape**.
-
-*Figure 3. Customize point shape*
-
-```{r figure 3, message=FALSE, warning=FALSE, fig.width= 10, fig.height=4}
-# shape default = 16
-bias_rank_shape <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "rank", nSD_rank = 3, plot_point_shape = 2)
-
-plot_grid(bias_rank$subject$Plot, bias_rank_shape$subject$Plot)
-```
-
--   `threshold = "both"`: Detects biased genes based on both deviance change and rank difference, providing a more stringent filtering approach.
-
-```{r both, comment = NA, message=FALSE, warning=FALSE}
-bias_both <- biasDetect(list_batch_df = list_batch_df, threshold = "both",
-    nSD_dev = 3, nSD_rank = 3)
-```
-
-*Table 3. Outlier Genes defined by nSD_dev and nSD_rank*
-
-```{r table 3, comment = NA, message=FALSE, warning=FALSE}
 head(bias_both$subject$Table)
 ```
 
-We can change the data point color using **plot_palette**. The color palette [here](https://r-graph-gallery.com/38-rcolorbrewers-palettes.html) can be referenced on since the function uses `RColorBrewer` to generate colors.
+*Figure 2. Outlier Genes defined by nSD_dev and nSD_rank*
 
-*Figure 4. Customize the palette color*
-
-```{r figure 4, message=FALSE, warning=FALSE, fig.width= 10, fig.height=8}
-# color default = "YlOrRd"
-bias_both_color <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "both", nSD_dev = 3, nSD_rank = 3, plot_palette = "Greens")
-
-plot_grid(bias_both$subject$Plot, bias_both_color$subject$Plot,nrow = 2)
+```{r figure 2, message=FALSE, warning=FALSE, fig.width= 10, fig.height=4}
+bias_both$subject$Plot
 ```
 
-We can change the text size using **plot_text_size**. We also specify the color palettes for both batch effects at the same time.
 
-*Figure 5. Customize text size and color palette*
+### After `BatchSVG` implementation
 
-```{r figure 5, message=FALSE, warning=FALSE, fig.width= 10, fig.height=8}
-# text size default = 3
-bias_both_color_text <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "both", nSD_dev = 3, nSD_rank = 3, 
-    plot_palette = c("Blues"), plot_text_size = 4)
-
-plot_grid(bias_both$subject$Plot, bias_both_color_text$subject$Plot,nrow = 2)
-```
-
-#### Refine SVGs by Removing Batch-Affected Outliers
+#### Refined SVGs
 
 Finally, we obtain a refined set of spatially variable genes (SVGs) by removing the identified outliers based on user-defined thresholds for `nSD_dev` and `nSD_rank`.
 
-Here, we use the results from bias_both, which applied `threshold = "both"` to account for both deviance and rank differences, with the batch effect set to sample ID.
-
 ```{r new svgs, comment = NA, message=FALSE, warning=FALSE}
 bias_both_df <- bias_both$subject$Table
-svgs_filt <- setdiff(libd_nnsvgs$gene_id, bias_both_df$gene_id)
-svgs_filt_spe <- libd_nnsvgs[libd_nnsvgs$gene_id %in% svgs_filt, ]
+svgs_filt <- setdiff(res_ranks_LIBD$gene_id, bias_both_df$gene_id)
+svgs_filt_spe <- res_ranks_LIBD[res_ranks_LIBD$gene_id %in% svgs_filt, ]
 nrow(svgs_filt_spe)
 ```
 
+#### Clustering
+
 After obtaining the refined set of SVGs, these genes can be further analyzed using established spatial transcriptomics clustering algorithms to explore tissue layers and spatial organization.
 
-```{r clustering performance}
-# TBD
+```{r clustering after, comment=NA, message=FALSE, warning=FALSE}
 ```
 
 ### `R` session information {.unnumbered}
