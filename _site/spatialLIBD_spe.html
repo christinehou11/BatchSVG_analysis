@@ -189,7 +189,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(PRECAST)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(BatchSVG)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(BatchSVG)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggspavis)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The <code>spatialLIBD</code> dataset was collected from the brain region of dorsolateral prefontal cortex (dlPFC) and was also sequenced with 10X Visium. This dataset has 3 subjects and 4 samples from each subject. Because there was no slide metadata available, we investigated whether <code>batch = subject</code> influenced the top features.</p>
 <div class="cell">
@@ -385,37 +387,6 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 </div>
 </div>
 </section>
-<section id="clustering" class="level4">
-<h4 class="anchored" data-anchor-id="clustering">Clustering</h4>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>l2 <span class="ot">=</span> <span class="fu">unique</span>(spatialLIBD_spe_filtered<span class="sc">$</span>subject)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(l2) <span class="ot">=</span> l2</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>l2 <span class="ot">=</span> <span class="fu">lapply</span>(l2, <span class="cf">function</span>(x) spatialLIBD_spe_filtered[,<span class="fu">colData</span>(spatialLIBD_spe_filtered)<span class="sc">$</span>subject<span class="sc">==</span>x])</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>srt.sets <span class="ot">=</span> <span class="fu">lapply</span>(l2, <span class="cf">function</span>(x) {</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(<span class="fu">counts</span>(x)) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(<span class="fu">colData</span>(x))</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colData</span>(x)<span class="sc">$</span>col <span class="ot">&lt;-</span> x<span class="sc">$</span>array_col</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colData</span>(x)<span class="sc">$</span>row <span class="ot">&lt;-</span> x<span class="sc">$</span>array_row</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  count <span class="ot">&lt;-</span> <span class="fu">counts</span>(x)</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  a1 <span class="ot">&lt;-</span> <span class="fu">CreateAssayObject</span>(count, <span class="at">assay =</span> <span class="st">"RNA"</span>, <span class="at">min.features =</span> <span class="dv">0</span>, <span class="at">min.cells =</span> <span class="dv">0</span>)</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">CreateSeuratObject</span>(a1, <span class="at">meta.data =</span> <span class="fu">as.data.frame</span>(<span class="fu">colData</span>(x)))</span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="co">#run precast</span></span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>preobj <span class="ot">&lt;-</span> <span class="fu">CreatePRECASTObject</span>(<span class="at">seuList =</span> srt.sets,</span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>                              <span class="at">customGenelist=</span><span class="fu">rownames</span>(spatialLIBD_spe_filtered),</span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>                              <span class="at">premin.spots=</span><span class="dv">0</span>, <span class="at">premin.features=</span><span class="dv">0</span>, <span class="at">postmin.spots=</span><span class="dv">0</span>, <span class="at">postmin.features=</span><span class="dv">0</span>)</span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>PRECASTObj <span class="ot">&lt;-</span> <span class="fu">AddAdjList</span>(preobj, <span class="at">platform =</span> <span class="st">"Visium"</span>)</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>PRECASTObj <span class="ot">&lt;-</span> <span class="fu">AddParSetting</span>(PRECASTObj, <span class="at">maxIter =</span> <span class="dv">20</span>, <span class="at">verbose =</span> <span class="cn">TRUE</span>, <span class="at">Sigma_equal=</span><span class="cn">FALSE</span>, <span class="at">coreNum=</span><span class="dv">12</span>)</span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>PRECASTObj <span class="ot">&lt;-</span> <span class="fu">PRECAST</span>(PRECASTObj, <span class="at">K=</span><span class="dv">7</span>)</span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a><span class="co">#consolidate/ reformat results</span></span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>PRECASTObj <span class="ot">&lt;-</span> <span class="fu">SelectModel</span>(PRECASTObj, <span class="at">criteria=</span><span class="st">"MBIC"</span>)</span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>seuInt <span class="ot">&lt;-</span> <span class="fu">IntegrateSpaData</span>(PRECASTObj, <span class="at">species =</span> <span class="st">"Human"</span>)</span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(seuInt<span class="sc">@</span>meta.data, <span class="st">"findBiasedFeatures/processed-data/seuInt-hpc_k-7_svgs_metadata.csv"</span>, <span class="at">row.names=</span>T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
 </section>
 <section id="batchsvg-implementation" class="level3">
 <h3 class="anchored" data-anchor-id="batchsvg-implementation"><code>BatchSVG</code> implementation</h3>
@@ -423,22 +394,22 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 <h4 class="anchored" data-anchor-id="installation">Installation</h4>
 <p>(After accepted in <a href="https://bioconductor.org/">Bioconductor</a>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"BiocManager"</span>)) {</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">"BiocManager"</span>)</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"BatchSVG"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"BiocManager"</span>)) {</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">"BiocManager"</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"BatchSVG"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Install the development version from <a href="https://christinehou11.github.io/BatchSVG">GitHub</a>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install</span>(<span class="st">"christinehou11/BatchSVG"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install</span>(<span class="st">"christinehou11/BatchSVG"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="batchsvgfeatureselect-perform-feature-selection" class="level4">
 <h4 class="anchored" data-anchor-id="batchsvgfeatureselect-perform-feature-selection"><code>BatchSVG::featureSelect()</code>: Perform Feature Selection</h4>
 <p>We first applied <code>featureSelect()</code> function from <code>BatchSVG</code> package to compute the number of standard deviations for the relative change in deviance (<strong>nSD_dev_subject</strong>) and rank difference (<strong>nSD_rank_subject</strong>) for <code>batch = subject</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>list_batch_df <span class="ot">&lt;-</span> <span class="fu">featureSelect</span>(<span class="at">input =</span> spatialLIBD_spe, </span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">batch_effect =</span> <span class="st">"subject"</span>, <span class="at">VGs =</span> res_ranks_LIBD<span class="sc">$</span>gene_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>list_batch_df <span class="ot">&lt;-</span> <span class="fu">featureSelect</span>(<span class="at">input =</span> spatialLIBD_spe, </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">batch_effect =</span> <span class="st">"subject"</span>, <span class="at">VGs =</span> res_ranks_LIBD<span class="sc">$</span>gene_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Running feature selection without batch...</code></pre>
 </div>
@@ -453,13 +424,13 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(list_batch_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(list_batch_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "list"</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(list_batch_df<span class="sc">$</span>subject)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(list_batch_df<span class="sc">$</span>subject)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          gene_id gene_name dev_default rank_default dev_subject rank_subject
 1 ENSG00000187608     ISG15    43591.43         1151    43304.39         1157
@@ -482,12 +453,12 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 <h4 class="anchored" data-anchor-id="batchsvgsvg_nsd-visualize-svg-selection-for-batch-effects"><code>BatchSVG::svg_nSD()</code>: Visualize SVG Selection for Batch Effect(s)</h4>
 <p>We utilized <code>svg_nSD()</code> function to generate visualizations for batch effects assessments in spatially variable genes (SVGs).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">svg_nSD</span>(<span class="at">list_batch_df =</span> list_batch_df, </span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd_interval_dev =</span> <span class="dv">4</span>, <span class="at">sd_interval_rank =</span> <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">svg_nSD</span>(<span class="at">list_batch_df =</span> list_batch_df, </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd_interval_dev =</span> <span class="dv">4</span>, <span class="at">sd_interval_rank =</span> <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><em>Figure 1. Visualizations of nSD_dev and nSD_rank threshold selection</em></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>plots<span class="sc">$</span>subject</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>plots<span class="sc">$</span>subject</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="spatialLIBD_spe_files/figure-html/figure 1-1.png" class="img-fluid" width="960"></p>
 </div>
@@ -497,31 +468,28 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 <h4 class="anchored" data-anchor-id="batchsvgbiasdetect-identify-biased-genes"><code>BatchSVG::biasDetect()</code>: Identify Biased Genes</h4>
 <p>Using <code>nSD_svg()</code> function, we determined that <code>nSD_dev = 4</code> and <code>nSD_rank = 6</code>. Then, we can applied <code>biasDetect()</code> function on <code>spe</code> object to identify and filter out biased genes. We used both thresholds (<code>threshold = "both"</code>) and customized the plot color (<code>plot_palette = "RdPu"</code>), the point shape and shape (<code>plot_point_shape = 23</code>), and the text size for biased genes (<code>plot_text_size = 4</code>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>bias_both <span class="ot">&lt;-</span> <span class="fu">biasDetect</span>(<span class="at">list_batch_df =</span> list_batch_df, <span class="at">threshold =</span> <span class="st">"both"</span>,</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">nSD_dev =</span> <span class="dv">4</span>, <span class="at">nSD_rank =</span> <span class="dv">6</span>, <span class="at">plot_point_shape =</span> <span class="dv">23</span>, <span class="at">plot_palette =</span> <span class="st">"RdPu"</span>,</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot_text_size =</span> <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>bias_both <span class="ot">&lt;-</span> <span class="fu">biasDetect</span>(<span class="at">list_batch_df =</span> list_batch_df, <span class="at">threshold =</span> <span class="st">"both"</span>,</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">nSD_dev =</span> <span class="dv">4</span>, <span class="at">nSD_rank =</span> <span class="dv">7</span>, <span class="at">plot_point_shape =</span> <span class="dv">23</span>, <span class="at">plot_palette =</span> <span class="st">"RdPu"</span>,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot_text_size =</span> <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><em>Table 1. Outlier Genes defined by nSD_dev and nSD_rank</em></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(bias_both<span class="sc">$</span>subject<span class="sc">$</span>Table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(bias_both<span class="sc">$</span>subject<span class="sc">$</span>Table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          gene_id gene_name dev_default rank_default dev_subject rank_subject
-1 ENSG00000255823  MTRNR2L8   286927.87            5    67738.95           77
-2 ENSG00000172508    CARNS1    40524.63         1365    37448.41         1621
-3 ENSG00000256618  MTRNR2L1   167381.86           14    40299.65         1368
-      d_diff nSD_dev_subject r_diff nSD_rank_subject nSD_bin_dev dev_outlier
-1 3.23578861       31.079310     72         1.912499     [28,32]        TRUE
-2 0.08214558        0.682815    256         6.799995       [0,4)       FALSE
-3 3.15343161       30.285509   1354        35.965598     [28,32]        TRUE
+1 ENSG00000255823  MTRNR2L8    286927.9            5    67738.95           77
+2 ENSG00000256618  MTRNR2L1    167381.9           14    40299.65         1368
+    d_diff nSD_dev_subject r_diff nSD_rank_subject nSD_bin_dev dev_outlier
+1 3.235789        31.07931     72         1.912499     [28,32]        TRUE
+2 3.153432        30.28551   1354        35.965598     [28,32]        TRUE
   nSD_bin_rank rank_outlier
-1        [0,6)        FALSE
-2       [6,12)         TRUE
-3      [30,36]         TRUE</code></pre>
+1        [0,7)        FALSE
+2      [35,42]         TRUE</code></pre>
 </div>
 </div>
 <p><em>Figure 2. Outlier Genes defined by nSD_dev and nSD_rank</em></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>bias_both<span class="sc">$</span>subject<span class="sc">$</span>Plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>bias_both<span class="sc">$</span>subject<span class="sc">$</span>Plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="spatialLIBD_spe_files/figure-html/figure 2-1.png" class="img-fluid" width="960"></p>
 </div>
@@ -530,29 +498,51 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 </section>
 <section id="after-batchsvg-implementation" class="level3">
 <h3 class="anchored" data-anchor-id="after-batchsvg-implementation">After <code>BatchSVG</code> implementation</h3>
+<section id="subject-related-biased-features" class="level4">
+<h4 class="anchored" data-anchor-id="subject-related-biased-features">Subject-related biased features</h4>
+<p>Two identified biased features are <strong>MTRNR2L1</strong> and <strong>MTRNR2L8</strong>. Spatial expression plots illustrate that these features display strong subject-biased expression and are also clearly enriched in certain spatial domains. <strong>MTRNR2L1</strong> and <strong>MTRNR2L8</strong> are perfect examples of features that may introduce noise if included in spatial domain clustering.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>ml1 <span class="ot">&lt;-</span> <span class="fu">plotSpots</span>(spatialLIBD_spe, <span class="at">annotate=</span><span class="st">"ENSG00000256618"</span>, <span class="at">assay=</span><span class="st">"logcounts"</span>, </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">sample_id=</span><span class="st">"sample_id"</span>, <span class="at">point_size=</span>.<span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggtitle</span>(<span class="st">"MTRNR2L1"</span>) <span class="sc">+</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">scale_color_gradient</span>(<span class="at">low=</span><span class="st">'grey90'</span>, <span class="at">high=</span><span class="st">'black'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Scale for colour is already present.
+Adding another scale for colour, which will replace the existing scale.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>ml8 <span class="ot">&lt;-</span> <span class="fu">plotSpots</span>(spatialLIBD_spe, <span class="at">annotate=</span><span class="st">"ENSG00000255823"</span>, <span class="at">assay=</span><span class="st">"logcounts"</span>, </span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">sample_id=</span><span class="st">"sample_id"</span>, <span class="at">point_size=</span>.<span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggtitle</span>(<span class="st">"MTRNR2L8"</span>) <span class="sc">+</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">scale_color_gradient</span>(<span class="at">low=</span><span class="st">'grey90'</span>, <span class="at">high=</span><span class="st">'black'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Scale for colour is already present.
+Adding another scale for colour, which will replace the existing scale.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(ml1, ml8, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatialLIBD_spe_files/figure-html/subject-related plots-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+</section>
 <section id="refined-svgs" class="level4">
 <h4 class="anchored" data-anchor-id="refined-svgs">Refined SVGs</h4>
 <p>Finally, we obtain a refined set of spatially variable genes (SVGs) by removing the identified outliers based on user-defined thresholds for <code>nSD_dev</code> and <code>nSD_rank</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>bias_both_df <span class="ot">&lt;-</span> bias_both<span class="sc">$</span>subject<span class="sc">$</span>Table</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>svgs_filt <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(res_ranks_LIBD<span class="sc">$</span>gene_id, bias_both_df<span class="sc">$</span>gene_id)</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>svgs_filt_spe <span class="ot">&lt;-</span> res_ranks_LIBD[res_ranks_LIBD<span class="sc">$</span>gene_id <span class="sc">%in%</span> svgs_filt, ]</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(svgs_filt_spe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>bias_both_df <span class="ot">&lt;-</span> bias_both<span class="sc">$</span>subject<span class="sc">$</span>Table</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>svgs_filt <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(res_ranks_LIBD<span class="sc">$</span>gene_id, bias_both_df<span class="sc">$</span>gene_id)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>svgs_filt_spe <span class="ot">&lt;-</span> res_ranks_LIBD[res_ranks_LIBD<span class="sc">$</span>gene_id <span class="sc">%in%</span> svgs_filt, ]</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(svgs_filt_spe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1964</code></pre>
+<pre><code>[1] 1965</code></pre>
 </div>
 </div>
-</section>
-<section id="clustering-1" class="level4">
-<h4 class="anchored" data-anchor-id="clustering-1">Clustering</h4>
-<p>After obtaining the refined set of SVGs, these genes can be further analyzed using established spatial transcriptomics clustering algorithms to explore tissue layers and spatial organization.</p>
 </section>
 </section>
 <section id="r-session-information" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="r-session-information"><code>R</code> session information</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Session info</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Session info</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.4.2 (2024-10-31)
 Platform: aarch64-apple-darwin20
@@ -573,46 +563,47 @@ attached base packages:
 [8] methods   base     
 
 other attached packages:
- [1] BatchSVG_0.99.6             Seurat_5.2.1               
- [3] SeuratObject_5.0.2          sp_2.2-0                   
- [5] PRECAST_1.6.5               gtools_3.9.5               
- [7] here_1.0.1                  scater_1.34.1              
- [9] ggplot2_3.5.1               scuttle_1.16.0             
-[11] nnSVG_1.10.3                spatialLIBD_1.18.0         
-[13] SpatialExperiment_1.16.0    SingleCellExperiment_1.28.1
-[15] SummarizedExperiment_1.36.0 Biobase_2.66.0             
-[17] GenomicRanges_1.58.0        GenomeInfoDb_1.42.3        
-[19] IRanges_2.40.1              S4Vectors_0.44.0           
-[21] BiocGenerics_0.52.0         MatrixGenerics_1.18.1      
-[23] matrixStats_1.5.0          
+ [1] gridExtra_2.3               ggspavis_1.12.0            
+ [3] BatchSVG_0.99.6             Seurat_5.2.1               
+ [5] SeuratObject_5.0.2          sp_2.2-0                   
+ [7] PRECAST_1.6.5               gtools_3.9.5               
+ [9] here_1.0.1                  scater_1.34.1              
+[11] ggplot2_3.5.1               scuttle_1.16.0             
+[13] nnSVG_1.10.3                spatialLIBD_1.18.0         
+[15] SpatialExperiment_1.16.0    SingleCellExperiment_1.28.1
+[17] SummarizedExperiment_1.36.0 Biobase_2.66.0             
+[19] GenomicRanges_1.58.0        GenomeInfoDb_1.42.3        
+[21] IRanges_2.40.1              S4Vectors_0.44.0           
+[23] BiocGenerics_0.52.0         MatrixGenerics_1.18.1      
+[25] matrixStats_1.5.0          
 
 loaded via a namespace (and not attached):
   [1] spatstat.sparse_3.1-0    bitops_1.0-9             httr_1.4.7              
   [4] RColorBrewer_1.1-3       doParallel_1.0.17        backports_1.5.0         
   [7] sctransform_0.4.1        tools_4.4.2              R6_2.6.1                
  [10] DT_0.33                  uwot_0.2.3               lazyeval_0.2.2          
- [13] withr_3.0.2              gridExtra_2.3            progressr_0.15.1        
- [16] cli_3.6.4                spatstat.explore_3.4-2   fastDummies_1.7.5       
- [19] labeling_0.4.3           sass_0.4.9               spatstat.data_3.1-6     
- [22] ggridges_0.5.6           pbapply_1.7-2            Rsamtools_2.22.0        
- [25] parallelly_1.43.0        sessioninfo_1.2.3        attempt_0.3.1           
- [28] maps_3.4.2.1             limma_3.62.2             rstudioapi_0.17.1       
- [31] RSQLite_2.3.9            generics_0.1.3           BiocIO_1.16.0           
- [34] spatstat.random_3.3-3    ica_1.0-3                car_3.1-3               
- [37] dplyr_1.1.4              Matrix_1.7-3             ggbeeswarm_0.7.2        
- [40] abind_1.4-8              lifecycle_1.0.4          yaml_2.3.10             
- [43] edgeR_4.4.2              carData_3.0-5            CompQuadForm_1.4.3      
- [46] SparseArray_1.6.2        BiocFileCache_2.14.0     Rtsne_0.17              
- [49] paletteer_1.6.0          grid_4.4.2               blob_1.2.4              
- [52] promises_1.3.2           ExperimentHub_2.14.0     crayon_1.5.3            
- [55] GiRaF_1.0.1              miniUI_0.1.1.1           lattice_0.22-6          
- [58] beachmat_2.22.0          cowplot_1.1.3            KEGGREST_1.46.0         
- [61] magick_2.8.6             pillar_1.10.1            knitr_1.50              
- [64] rjson_0.2.23             future.apply_1.11.3      codetools_0.2-20        
- [67] glue_1.8.0               spatstat.univar_3.1-2    data.table_1.17.0       
- [70] vctrs_0.6.5              png_0.1-8                spam_2.11-1             
- [73] gtable_0.3.6             rematch2_2.1.2           cachem_1.1.0            
- [76] xfun_0.51                S4Arrays_1.6.0           mime_0.13               
+ [13] withr_3.0.2              progressr_0.15.1         cli_3.6.4               
+ [16] spatstat.explore_3.4-2   fastDummies_1.7.5        labeling_0.4.3          
+ [19] sass_0.4.9               spatstat.data_3.1-6      ggridges_0.5.6          
+ [22] pbapply_1.7-2            Rsamtools_2.22.0         parallelly_1.43.0       
+ [25] sessioninfo_1.2.3        attempt_0.3.1            maps_3.4.2.1            
+ [28] limma_3.62.2             rstudioapi_0.17.1        RSQLite_2.3.9           
+ [31] generics_0.1.3           BiocIO_1.16.0            spatstat.random_3.3-3   
+ [34] ica_1.0-3                car_3.1-3                dplyr_1.1.4             
+ [37] Matrix_1.7-3             ggbeeswarm_0.7.2         abind_1.4-8             
+ [40] lifecycle_1.0.4          yaml_2.3.10              edgeR_4.4.2             
+ [43] carData_3.0-5            CompQuadForm_1.4.3       SparseArray_1.6.2       
+ [46] BiocFileCache_2.14.0     Rtsne_0.17               paletteer_1.6.0         
+ [49] grid_4.4.2               blob_1.2.4               promises_1.3.2          
+ [52] ExperimentHub_2.14.0     crayon_1.5.3             GiRaF_1.0.1             
+ [55] miniUI_0.1.1.1           lattice_0.22-6           beachmat_2.22.0         
+ [58] cowplot_1.1.3            KEGGREST_1.46.0          magick_2.8.6            
+ [61] pillar_1.10.1            knitr_1.50               rjson_0.2.23            
+ [64] future.apply_1.11.3      codetools_0.2-20         glue_1.8.0              
+ [67] spatstat.univar_3.1-2    data.table_1.17.0        vctrs_0.6.5             
+ [70] png_0.1-8                spam_2.11-1              gtable_0.3.6            
+ [73] rematch2_2.1.2           cachem_1.1.0             xfun_0.51               
+ [76] S4Arrays_1.6.0           mime_0.13                ggside_0.3.1            
  [79] survival_3.8-3           iterators_1.0.14         fields_16.3.1           
  [82] statmod_1.5.0            fitdistrplus_1.2-2       ROCR_1.0-11             
  [85] nlme_3.1-167             bit64_4.6.0-1            filelock_1.0.3          
