@@ -1,5 +1,5 @@
 ---
-title: "featureSelection"
+title: "Feature Selection Method"
 format: html
 ---
 

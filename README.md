@@ -4,10 +4,8 @@ This is the repository to store all analysis works for the manuscript and method
 
 -   Feature Selection Model
 
--   Data-driven Thresholding Approach
-
 -   `BatchSVG` R/Bioconductor Package Sample Analysis
 
-    -   `spatialLIBD` spatial transcriptomics dataset
+    -   `spatialLIBD` DLPFC dataset
 
-    -   `humanHippocampus2024` spatial transcriptomics dataset
+    -   `humanHippocampus2024` HPC dataset

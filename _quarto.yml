@@ -10,12 +10,10 @@ website:
         text: Home
       - href: featureSelection.qmd
         text: Why
-      - href: dataDrivenThreshold.qmd
-        text: How
-      - href: humanHippocampus2024_sub4_spe.qmd
-        text: analysis_1
       - href: spatialLIBD_spe.qmd
-        text: analysis_2
+        text: spatialLIBD
+      - href: humanHippocampus2024_sub4_spe.qmd
+        text: humanHippocampus2024
 
 format:
   html:

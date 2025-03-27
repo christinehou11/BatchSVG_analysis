@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>BatchSVG_analysis - featureSelection</title>
+<title>BatchSVG_analysis - Feature Selection Method</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -128,12 +128,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">How</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./humanHippocampus2024_sub4_spe.html" rel="" target="">
- <span class="menu-text">analysis_1</span></a>
+    <a class="nav-link" href="./spatialLIBD_spe.html" rel="" target="">
+ <span class="menu-text">spatialLIBD</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./spatialLIBD_spe.html" rel="" target="">
- <span class="menu-text">analysis_2</span></a>
+    <a class="nav-link" href="./humanHippocampus2024_sub4_spe.html" rel="" target="">
+ <span class="menu-text">humanHippocampus2024</span></a>
   </li>  
 </ul>
             <div class="quarto-navbar-tools ms-auto">
@@ -164,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">featureSelection</h1>
+<h1 class="title">Feature Selection Method</h1>
 </div>
 
 
@@ -1073,7 +1073,7 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.4.2 (2024-10-31)
 Platform: aarch64-apple-darwin20
-Running under: macOS Sequoia 15.3
+Running under: macOS Sequoia 15.3.2
 
 Matrix products: default
 BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
@@ -1108,7 +1108,7 @@ other attached packages:
 
 loaded via a namespace (and not attached):
   [1] later_1.4.1              BiocIO_1.16.0            ggplotify_0.1.2         
-  [4] bitops_1.0-9             filelock_1.0.3           fields_16.3             
+  [4] bitops_1.0-9             filelock_1.0.3           fields_16.3.1           
   [7] XML_3.99-0.18            lifecycle_1.0.4          edgeR_4.4.2             
  [10] doParallel_1.0.17        lattice_0.22-6           magrittr_2.0.3          
  [13] limma_3.62.2             plotly_4.10.4            sass_0.4.9              
@@ -1117,39 +1117,39 @@ loaded via a namespace (and not attached):
  [22] spam_2.11-1              sessioninfo_1.2.3        cowplot_1.1.3           
  [25] DBI_1.2.3                RColorBrewer_1.1-3       golem_0.5.1             
  [28] maps_3.4.2.1             abind_1.4-8              zlibbioc_1.52.0         
- [31] RCurl_1.98-1.16          yulab.utils_0.2.0        rappdirs_0.3.3          
+ [31] RCurl_1.98-1.17          yulab.utils_0.2.0        rappdirs_0.3.3          
  [34] GenomeInfoDbData_1.2.13  irlba_2.3.5.1            dqrng_0.4.1             
- [37] codetools_0.2-20         DelayedArray_0.32.0      xml2_1.3.7              
+ [37] codetools_0.2-20         DelayedArray_0.32.0      xml2_1.3.8              
  [40] DT_0.33                  tidyselect_1.2.1         aplot_0.2.5             
  [43] farver_2.1.2             UCSC.utils_1.2.0         ScaledMatrix_1.14.0     
  [46] viridis_0.6.5            shinyWidgets_0.9.0       BiocFileCache_2.14.0    
  [49] GenomicAlignments_1.42.0 jsonlite_1.9.1           BiocNeighbors_2.0.1     
- [52] scater_1.34.0            iterators_1.0.14         foreach_1.5.2           
+ [52] scater_1.34.1            iterators_1.0.14         foreach_1.5.2           
  [55] tools_4.4.2              Rcpp_1.0.14              glue_1.8.0              
  [58] SparseArray_1.6.2        xfun_0.51                withr_3.0.2             
  [61] BiocManager_1.30.25      fastmap_1.2.0            bluster_1.16.0          
  [64] digest_0.6.37            rsvd_1.0.5               gridGraphics_0.5-1      
- [67] timechange_0.3.0         R6_2.6.1                 mime_0.12               
+ [67] timechange_0.3.0         R6_2.6.1                 mime_0.13               
  [70] colorspace_2.1-1         RSQLite_2.3.9            config_0.3.2            
  [73] generics_0.1.3           data.table_1.17.0        rtracklayer_1.66.0      
  [76] httr_1.4.7               htmlwidgets_1.6.4        S4Arrays_1.6.0          
  [79] pkgconfig_2.0.3          gtable_0.3.6             blob_1.2.4              
  [82] XVector_0.46.0           htmltools_0.5.8.1        dotCall64_1.2           
  [85] scales_1.3.0             png_0.1-8                attempt_0.3.1           
- [88] ggfun_0.1.8              knitr_1.49               rstudioapi_0.17.1       
- [91] tzdb_0.4.0               rjson_0.2.23             curl_6.2.1              
+ [88] ggfun_0.1.8              knitr_1.50               rstudioapi_0.17.1       
+ [91] tzdb_0.5.0               rjson_0.2.23             curl_6.2.2              
  [94] cachem_1.1.0             BiocVersion_3.20.0       parallel_4.4.2          
  [97] vipor_0.4.7              AnnotationDbi_1.68.0     restfulr_0.0.15         
 [100] pillar_1.10.1            grid_4.4.2               vctrs_0.6.5             
 [103] promises_1.3.2           BiocSingular_1.22.0      dbplyr_2.5.0            
-[106] beachmat_2.22.0          xtable_1.8-4             cluster_2.1.8           
+[106] beachmat_2.22.0          xtable_1.8-4             cluster_2.1.8.1         
 [109] beeswarm_0.4.0           paletteer_1.6.0          evaluate_1.0.3          
-[112] magick_2.8.5             cli_3.6.4                locfit_1.5-9.11         
+[112] magick_2.8.6             cli_3.6.4                locfit_1.5-9.12         
 [115] compiler_4.4.2           Rsamtools_2.22.0         rlang_1.1.5             
 [118] crayon_1.5.3             labeling_0.4.3           rematch2_2.1.2          
 [121] fs_1.6.5                 ggbeeswarm_0.7.2         stringi_1.8.4           
 [124] viridisLite_0.4.2        BiocParallel_1.40.0      munsell_0.5.1           
-[127] Biostrings_2.74.1        lazyeval_0.2.2           Matrix_1.7-2            
+[127] Biostrings_2.74.1        lazyeval_0.2.2           Matrix_1.7-3            
 [130] ExperimentHub_2.14.0     benchmarkme_1.0.8        patchwork_1.3.0         
 [133] hms_1.1.3                bit64_4.6.0-1            KEGGREST_1.46.0         
 [136] statmod_1.5.0            shiny_1.10.0             AnnotationHub_3.14.0    

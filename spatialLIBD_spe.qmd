@@ -199,7 +199,7 @@ plots$subject
 
 #### `BatchSVG::biasDetect()`: Identify Biased Genes
 
-Using `nSD_svg()` function, we determined that `nSD_dev = 4` and `nSD_rank = 6`. Then, we applied `biasDetect()` function on `spe` object to identify and filter out biased genes. We used both thresholds (`threshold = "both"`) and customized the plot color (`plot_palette = "RdPu"`), the point shape and shape (`plot_point_shape = 23`), and the text size for biased genes (`plot_text_size = 4`).
+Using `nSD_svg()` function, we determined that `nSD_dev = 4` and `nSD_rank = 6`. Then, we applied `biasDetect()` function on the list of data frames obtained from `featureSelect()` function to identify and filter out biased genes. We used both thresholds (`threshold = "both"`) and customized the plot color (`plot_palette = "RdPu"`), the point shape and shape (`plot_point_shape = 23`), and the text size for biased genes (`plot_text_size = 4`).
 
 ```{r biasDetect, comment = NA, message=FALSE, warning=FALSE}
 bias_both <- biasDetect(list_batch_df = list_batch_df, threshold = "both",
@@ -210,7 +210,7 @@ bias_both <- biasDetect(list_batch_df = list_batch_df, threshold = "both",
 *Table 1. Outlier Genes defined by nSD_dev and nSD_rank*
 
 ```{r table 1, comment = NA, message=FALSE, warning=FALSE}
-head(bias_both$subject$Table)
+bias_both$subject$Table[,c("gene_id","gene_name","nSD_bin_dev", "dev_outlier", "nSD_bin_rank", "rank_outlier")]
 ```
 
 *Figure 2. Outlier Genes defined by nSD_dev and nSD_rank*
@@ -230,7 +230,9 @@ spatialLIBD_spe$tissue <- as.character(factor(paste(spatialLIBD_spe$position, sp
 spatialLIBD_spe$sample_id = paste(spatialLIBD_spe$subject, spatialLIBD_spe$tissue)
 ```
 
-```{r subject-related plots, fig.height=6, fig.width=14}
+*Figure 3. Spatial expression plots for MTRNR2L1 and MTRNR2L8*
+
+```{r subject-related plots, fig.height=6, fig.width=14, message=FALSE}
 ml1 <- plotSpots(spatialLIBD_spe, annotate="ENSG00000256618", assay="logcounts", 
           sample_id="sample_id", point_size=.1) + 
       ggtitle("MTRNR2L1") +
