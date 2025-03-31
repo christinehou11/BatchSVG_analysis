@@ -124,10 +124,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Why</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./dataDrivenThreshold.html" rel="" target="">
- <span class="menu-text">How</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="./spatialLIBD_spe.html" rel="" target="">
  <span class="menu-text">spatialLIBD</span></a>
   </li>  
@@ -285,7 +281,8 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggspavis)</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggbreak)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="similarly-identify-svgs-as-highly-ranked-features" class="level4">
@@ -325,18 +322,11 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 <span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>bd_batch_df<span class="sc">$</span>is_svg <span class="ot">=</span> <span class="fu">factor</span>(bd_batch_df<span class="sc">$</span>gene <span class="sc">%in%</span> libd_svg<span class="sc">$</span>gene_id, </span>
 <span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>            <span class="at">levels =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"SVGs"</span>,<span class="st">"not SVGs"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We found that both <code>modelGeneVar()</code> and <code>modelGeneVarByPoisson()</code> approaches rank a considerable portion of the SVGs as some of the lowest features in the dataset.</p>
-<p><em>Figure 1A. Mean-variance model rank some nnSVG results as low ranked features</em></p>
+<p>We found that both <code>modelGeneVar()</code> and <code>modelGeneVarByPoisson()</code> approaches rank a considerable portion of the SVGs as some of the lowest features in the dataset. In contrast, all the SVGs are ranked highly with the binomial deviance model (<code>devianceFeatureSelection()</code>). We can also saw that including a subject-batch effect didn’t dramatically change the rank of the SVGs.</p>
+<p><em>Figure 1. Binomial deviance model better corresponds to nnSVG results</em></p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="featureSelection_files/figure-html/figure 1a print-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>In contrast, all the SVGs are ranked highly with the binomial deviance model (<code>devianceFeatureSelection()</code>). We can also saw that including a subject-batch effect didn’t dramatically change the rank of the SVGs.</p>
-<p><em>Figure 1B. Binomial deviance model better corresponds to nnSVG results</em></p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="featureSelection_files/figure-html/figure 1b print-1.png" class="img-fluid" width="672"></p>
+<p><img src="featureSelection_files/figure-html/figure 1 print-1.png" class="img-fluid" width="1632"></p>
 </div>
 </div>
 <p>What’s more, more than 90% of <code>spatialLIBD</code> SVGs are ranked in the top 3000 features by binomial deviance model with and without <code>batch = subject</code>.</p>
@@ -355,7 +345,7 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 </section>
 <section id="identify-batch-biased-genes" class="level4">
 <h4 class="anchored" data-anchor-id="identify-batch-biased-genes"><strong>Identify batch biased genes</strong></h4>
-<p>Using the <code>modelGeneVar()</code> function, we compared the rank with and without the <code>batch = subject</code> and we noticed that there are two groups of features ranked highly in one model but lowly in another model (top left group and bottom right group).</p>
+<p>Using the <code>modelGeneVar()</code> function, we compared the rank with and without the <code>batch = subject</code> and we noticed that there are two groups of features ranked highly in one model but lowly in another model (top left group and bottom right group). Then, we looked at both groups of genes in red to see if they exhibit true subject-biased expression. Here we used <strong>RAPGEF5</strong> as example.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mv_batch <span class="ot">&lt;-</span> <span class="fu">modelGeneVar</span>(<span class="fu">logcounts</span>(spatialLIBD_spe),</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">block=</span><span class="fu">as.factor</span>(spatialLIBD_spe<span class="sc">$</span>subject))</span>
@@ -373,109 +363,107 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 <span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(rank_default <span class="sc">&lt;=</span> <span class="dv">3000</span> <span class="sc">|</span> rank_subject <span class="sc">&lt;=</span> <span class="dv">3000</span>) <span class="sc">|&gt;</span></span>
 <span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">batch_impact =</span> rank_default <span class="sc">&gt;</span> <span class="dv">30000</span> <span class="sc">|</span> rank_subject <span class="sc">&gt;</span> <span class="dv">30000</span>)</span>
 <span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>top_3k_mv_batch_genes <span class="ot">&lt;-</span> top_3k_mv_batch <span class="sc">|&gt;</span></span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(batch_impact <span class="sc">==</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(batch_impact <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>RAPGEF5_ensembl <span class="ot">&lt;-</span> top_3k_mv_batch_genes <span class="sc">|&gt;</span> <span class="fu">filter</span>(gene_name <span class="sc">==</span> <span class="st">"RAPGEF5"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(ensembl)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>RAPGEF5_expr <span class="ot">&lt;-</span> <span class="fu">logcounts</span>(spatialLIBD_spe)[RAPGEF5_ensembl, , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>mv_expr_df <span class="ot">&lt;-</span> <span class="fu">cbind.data.frame</span>(</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.data.frame</span>(<span class="fu">colData</span>(spatialLIBD_spe)[,<span class="fu">c</span>(<span class="st">"sample_id"</span>,<span class="st">"subject"</span>,</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"layer_guess_reordered_short"</span>)]),</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">avg.logcounts =</span> <span class="fu">as.vector</span>(RAPGEF5_expr)) <span class="sc">|&gt;</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(sample_id, subject,  layer_guess_reordered_short) <span class="sc">|&gt;</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">avg.logcounts =</span> <span class="fu">mean</span>(avg.logcounts, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>        <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(layer_guess_reordered_short))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><em>Fig2A. Comparison of feature rank with and without subject batch</em></p>
+<p><em>Figure 2A. Comparison of feature rank with and without subject batch</em></p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="featureSelection_files/figure-html/fig 2a print-1.png" class="img-fluid" width="672"></p>
+<p><img src="featureSelection_files/figure-html/figure 2a print-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
-<p>Then, we looked at both groups of genes in red to see if they exhibit true subject-biased expression. Here we used <strong>RAPGEF5</strong> as example.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>RAPGEF5_ensembl <span class="ot">&lt;-</span> top_3k_mv_batch_genes <span class="sc">|&gt;</span> <span class="fu">filter</span>(gene_name <span class="sc">==</span> <span class="st">"RAPGEF5"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(ensembl)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>RAPGEF5_expr <span class="ot">&lt;-</span> <span class="fu">logcounts</span>(spatialLIBD_spe)[RAPGEF5_ensembl, , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>mv_expr_df <span class="ot">&lt;-</span> <span class="fu">cbind.data.frame</span>(</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.data.frame</span>(<span class="fu">colData</span>(spatialLIBD_spe)[,<span class="fu">c</span>(<span class="st">"sample_id"</span>,<span class="st">"subject"</span>,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"layer_guess_reordered_short"</span>)]),</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">avg.logcounts =</span> <span class="fu">as.vector</span>(RAPGEF5_expr)) <span class="sc">|&gt;</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(sample_id, subject,  layer_guess_reordered_short) <span class="sc">|&gt;</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">avg.logcounts =</span> <span class="fu">mean</span>(avg.logcounts, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(layer_guess_reordered_short))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><em>Fig2B. RAPGEF5 is not subject biased but correlate with WM</em></p>
+<p>The plot illustrates the average expression of each sample across spatial domains alongside the spatial expression pattern of <strong>RAPGEF5</strong>. The graded expression across cortical layers suggests that <strong>RAPGEF5</strong> is spatially variable, with substantial differences in expression between subjects. However, its spatial expression pattern does not indicate subject bias.</p>
+<p><strong>Figure 2B. RAPGEF5 is not subject biased but correlate with WM</strong></p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="featureSelection_files/figure-html/figure 2b print-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>The plot illustrates the average expression of each sample across spatial domains alongside the spatial expression pattern of <strong>RAPGEF5</strong>. The graded expression across cortical layers suggests that <strong>RAPGEF5</strong> is spatially variable, with substantial differences in expression between subjects. However, its spatial expression pattern does not indicate subject bias.</p>
 <p>Thus, the changes in gene ranking when setting <code>batch = subject</code> in the <code>modelGeneVar()</code> function do not effectively identify potentially subject-biased genes.</p>
 </section>
 <section id="reproducibility-in-multiple-runs" class="level4">
 <h4 class="anchored" data-anchor-id="reproducibility-in-multiple-runs">Reproducibility in multiple runs</h4>
 <p>We set the seed to check the reproducibility of each approach.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>devianceFeatureSelection()</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>bd1 <span class="ot">&lt;-</span> <span class="fu">devianceFeatureSelection</span>(<span class="fu">counts</span>(spatialLIBD_spe), <span class="at">fam =</span> <span class="st">"binomial"</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>bd2 <span class="ot">&lt;-</span> <span class="fu">devianceFeatureSelection</span>(<span class="fu">counts</span>(spatialLIBD_spe), <span class="at">fam =</span> <span class="st">"binomial"</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>bd_repro <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">as.data.frame</span>(bd1), <span class="fu">as.data.frame</span>(bd2)) <span class="sc">|&gt;</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">abs_diff_dev_is_zero =</span> (<span class="fu">abs</span>(bd1 <span class="sc">-</span> bd2) <span class="sc">&lt;</span> <span class="fl">1e-10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>bd1 <span class="ot">&lt;-</span> <span class="fu">devianceFeatureSelection</span>(<span class="fu">counts</span>(spatialLIBD_spe), <span class="at">fam =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>bd2 <span class="ot">&lt;-</span> <span class="fu">devianceFeatureSelection</span>(<span class="fu">counts</span>(spatialLIBD_spe), <span class="at">fam =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>bd_repro <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">as.data.frame</span>(bd1), <span class="fu">as.data.frame</span>(bd2)) <span class="sc">|&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">abs_diff_dev_is_zero =</span> (<span class="fu">abs</span>(bd1 <span class="sc">-</span> bd2) <span class="sc">&lt;</span> <span class="fl">1e-10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>modelGeneVar()</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mv1 <span class="ot">&lt;-</span> <span class="fu">modelGeneVar</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>mv2 <span class="ot">&lt;-</span> <span class="fu">modelGeneVar</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>mv1<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv1)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>mv1<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv1) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv1<span class="sc">$</span>bio)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv1 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv1, <span class="at">n =</span> <span class="dv">3000</span>)</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>mv1_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv1[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>mv2<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv2)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>mv2<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv2) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv2<span class="sc">$</span>bio)</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv2 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv2, <span class="at">n =</span> <span class="dv">3000</span>)</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>mv2_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv2[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>mv_repro <span class="ot">&lt;-</span> <span class="fu">left_join</span>(mv1_df, mv2_df,</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">by =</span> <span class="st">"ensembl"</span>, <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">"_1"</span>, <span class="st">"_2"</span>))</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>mv_repro <span class="ot">&lt;-</span> mv_repro <span class="sc">|&gt;</span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">abs_diff_var =</span> <span class="fu">abs</span>(bio_1 <span class="sc">-</span> bio_2),</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">abs_diff_var_is_zero =</span> (abs_diff_var <span class="sc">&lt;</span> <span class="fl">1e-10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mv1 <span class="ot">&lt;-</span> <span class="fu">modelGeneVar</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>mv2 <span class="ot">&lt;-</span> <span class="fu">modelGeneVar</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>mv1<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv1)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>mv1<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv1) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv1<span class="sc">$</span>bio)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv1 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv1, <span class="at">n =</span> <span class="dv">3000</span>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>mv1_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv1[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>mv2<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv2)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>mv2<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv2) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv2<span class="sc">$</span>bio)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv2 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv2, <span class="at">n =</span> <span class="dv">3000</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>mv2_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv2[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>mv_repro <span class="ot">&lt;-</span> <span class="fu">left_join</span>(mv1_df, mv2_df,</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">by =</span> <span class="st">"ensembl"</span>, <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">"_1"</span>, <span class="st">"_2"</span>))</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>mv_repro <span class="ot">&lt;-</span> mv_repro <span class="sc">|&gt;</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">abs_diff_var =</span> <span class="fu">abs</span>(bio_1 <span class="sc">-</span> bio_2),</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">abs_diff_var_is_zero =</span> (abs_diff_var <span class="sc">&lt;</span> <span class="fl">1e-10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>modelGeneVarByPoisson()</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mv_pois1 <span class="ot">&lt;-</span> <span class="fu">modelGeneVarByPoisson</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>mv_pois2 <span class="ot">&lt;-</span> <span class="fu">modelGeneVarByPoisson</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>mv_pois1<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv_pois1)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>mv_pois1<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv_pois1) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv_pois1<span class="sc">$</span>bio)</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv_pois1 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv_pois1, <span class="at">n =</span> <span class="dv">3000</span>)</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>mv_pois1_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv_pois1[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>mv_pois2<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv_pois2)</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>mv_pois2<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv_pois2) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv_pois2<span class="sc">$</span>bio)</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv_pois2 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv_pois2, <span class="at">n =</span> <span class="dv">3000</span>)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>mv_pois2_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv_pois2[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>mvpois_repro <span class="ot">&lt;-</span> <span class="fu">left_join</span>(mv_pois1_df, mv_pois2_df,</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">by =</span> <span class="st">"ensembl"</span>, <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">"_1"</span>, <span class="st">"_2"</span>))</span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>mvpois_repro <span class="ot">&lt;-</span> mvpois_repro <span class="sc">|&gt;</span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">abs_diff_var =</span> <span class="fu">abs</span>(bio_1 <span class="sc">-</span> bio_2),</span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">abs_diff_var_is_zero =</span> (abs_diff_var <span class="sc">&lt;</span> <span class="fl">1e-10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mv_pois1 <span class="ot">&lt;-</span> <span class="fu">modelGeneVarByPoisson</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>mv_pois2 <span class="ot">&lt;-</span> <span class="fu">modelGeneVarByPoisson</span>(<span class="fu">logcounts</span>(spatialLIBD_spe))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>mv_pois1<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv_pois1)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>mv_pois1<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv_pois1) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv_pois1<span class="sc">$</span>bio)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv_pois1 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv_pois1, <span class="at">n =</span> <span class="dv">3000</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>mv_pois1_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv_pois1[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>mv_pois2<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv_pois2)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>mv_pois2<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv_pois2) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv_pois2<span class="sc">$</span>bio)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>top_hvgs_mv_pois2 <span class="ot">&lt;-</span> <span class="fu">getTopHVGs</span>(mv_pois2, <span class="at">n =</span> <span class="dv">3000</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>mv_pois2_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv_pois2[, <span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"bio"</span>, <span class="st">"rank"</span>)])</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>mvpois_repro <span class="ot">&lt;-</span> <span class="fu">left_join</span>(mv_pois1_df, mv_pois2_df,</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">by =</span> <span class="st">"ensembl"</span>, <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">"_1"</span>, <span class="st">"_2"</span>))</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>mvpois_repro <span class="ot">&lt;-</span> mvpois_repro <span class="sc">|&gt;</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">abs_diff_var =</span> <span class="fu">abs</span>(bio_1 <span class="sc">-</span> bio_2),</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">abs_diff_var_is_zero =</span> (abs_diff_var <span class="sc">&lt;</span> <span class="fl">1e-10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We observed that the <code>modelGeneVar()</code> function and <code>devianceFeatureSelection()</code> function both produce identical results with different runs, which ensures the reproducibility.</p>
-<p><em>Fig3A. modelGeneVar() and modelGeneVarByPoisson() ensures reproducibility</em></p>
+<p><em>Figure 3A. modelGeneVar() and modelGeneVarByPoisson() ensures reproducibility</em></p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="featureSelection_files/figure-html/figure 3a print-1.png" class="img-fluid" width="672"></p>
+<p><img src="featureSelection_files/figure-html/figure 3a print-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 <p>However, even with the same seed, the <code>modelGeneVarByPoisson()</code> function does not produce identical variance results, leading to rank fluctuations that can significantly impact the identification of highly variable genes (HVGs).</p>
-<p><em>Fig3B. modelGeneVarByPoisson() causes variance fluctuations (rank changes)</em></p>
+<p><em>Figure 3B. modelGeneVarByPoisson() causes variance fluctuations (rank changes)</em></p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="featureSelection_files/figure-html/figure 3b print-1.png" class="img-fluid" width="1152"></p>
@@ -483,25 +471,25 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 </div>
 <p>Using the <code>modelGeneVarByPoisson()</code> function does identify some rank differences due to <code>batch = subject</code> but are inconsistent. Compared to <code>modelGeneVar()</code> function, the poisson assumptions for technical variation reduced the number of features that were highly ranked with <code>batch = NULL</code> and highly ranked with <code>batch = subject</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mv_pois_batch <span class="ot">&lt;-</span> <span class="fu">modelGeneVarByPoisson</span>(<span class="fu">logcounts</span>(spatialLIBD_spe),</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">block =</span> <span class="fu">as.factor</span>(spatialLIBD_spe<span class="sc">$</span>subject))</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>mv_pois_batch<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv_pois_batch)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>mv_pois_batch<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv_pois_batch) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv_pois_batch<span class="sc">$</span>bio)</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>var_diff_pois <span class="ot">&lt;-</span> mvpois_repro <span class="sc">|&gt;</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(<span class="fu">as.data.frame</span>(mv_pois_batch[,<span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"rank"</span>, <span class="st">"bio"</span>)]))</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>var_diff_pois<span class="sc">$</span>gene_name <span class="ot">&lt;-</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rowData</span>(spatialLIBD_spe)[var_diff_pois<span class="sc">$</span>ensembl,<span class="st">"gene_name"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mv_pois_batch <span class="ot">&lt;-</span> <span class="fu">modelGeneVarByPoisson</span>(<span class="fu">logcounts</span>(spatialLIBD_spe),</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">block =</span> <span class="fu">as.factor</span>(spatialLIBD_spe<span class="sc">$</span>subject))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>mv_pois_batch<span class="sc">$</span>ensembl <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mv_pois_batch)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>mv_pois_batch<span class="sc">$</span>rank <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(mv_pois_batch) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">rank</span>(mv_pois_batch<span class="sc">$</span>bio)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>var_diff_pois <span class="ot">&lt;-</span> mvpois_repro <span class="sc">|&gt;</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(<span class="fu">as.data.frame</span>(mv_pois_batch[,<span class="fu">c</span>(<span class="st">"ensembl"</span>, <span class="st">"rank"</span>, <span class="st">"bio"</span>)]))</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>var_diff_pois<span class="sc">$</span>gene_name <span class="ot">&lt;-</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rowData</span>(spatialLIBD_spe)[var_diff_pois<span class="sc">$</span>ensembl,<span class="st">"gene_name"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><em>Fig3C. Poisson assumption reduced the number of highly ranked features</em></p>
+<p><em>Figure 3C. Poisson assumption reduced the number of highly ranked features</em></p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="featureSelection_files/figure-html/figure 3c print-1.png" class="img-fluid" width="1152"></p>
+<p><img src="featureSelection_files/figure-html/figure 3c print-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 <p>Moreover, introducing the batch variable to the <code>modelGeneVarByPoisson()</code> function resulted in inconsistencies that altered the top-ranked features, potentially including genes that are not subject-biased (e.g., <strong>COMMD6</strong>).</p>
-<p><em>Fig3D. Introduction of batch to modelGeneVarByPoisson() causes inconsistencies</em></p>
+<p><em>Figure 3D. Introduction of batch to modelGeneVarByPoisson() causes inconsistencies</em></p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="featureSelection_files/figure-html/figure 3d print-1.png" class="img-fluid" width="1152"></p>
@@ -513,55 +501,55 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 <h4 class="anchored" data-anchor-id="additional-property-match-dlpfc-cortical-layer">Additional Property: match DLPFC cortical layer</h4>
 <p>A separate but related property of the ideal feature selection model would be to generate a list of top features that are consistent with known DLPFC layer markers and comprise markers of all layer domains. We used the recently published list of <a href="https://www.science.org/doi/10.1126/science.adh1938">DLPFC layer markers</a> to characterize the top 3000 features of the mean-variance and binomial deviance models.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>dlpfc_layer_marker <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/TableS8_filtered-layer-markers.csv"</span>,</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">row.names =</span> <span class="dv">1</span>, <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Binomial deviance model</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>top_bd_3k <span class="ot">&lt;-</span> bd_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(rank <span class="sc">&lt;=</span> <span class="dv">3000</span>)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>dlpfc_bd_is <span class="ot">&lt;-</span> <span class="fu">semi_join</span>(</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    dlpfc_layer_marker[,<span class="fu">c</span>(<span class="st">"gene"</span>,<span class="st">"ensembl"</span>,<span class="st">"domain_simple"</span>)], </span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    top_bd_3k, <span class="at">by=</span><span class="fu">c</span>(<span class="st">"ensembl"</span><span class="ot">=</span><span class="st">"gene"</span>))</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>dlpfc_bd_not <span class="ot">=</span> <span class="fu">anti_join</span>(</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    top_bd_3k <span class="sc">|&gt;</span> <span class="fu">filter</span>(gene <span class="sc">%in%</span> <span class="fu">setdiff</span>(top_bd_3k<span class="sc">$</span>gene, dlpfc_bd_is<span class="sc">$</span>ensembl)),</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    dlpfc_bd_is, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"gene"</span> <span class="ot">=</span> <span class="st">"ensembl"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="st">"none"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">ensembl =</span> gene, <span class="at">gene =</span> gene_name) <span class="sc">|&gt;</span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(ensembl, gene, domain_simple) <span class="co"># not included in DLPFC marker table</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>dlpfc_bd_3k <span class="ot">&lt;-</span> <span class="fu">rbind</span>(dlpfc_bd_is, dlpfc_bd_not) <span class="sc">|&gt;</span></span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple=</span><span class="fu">factor</span>(domain_simple,</span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"L1"</span>,<span class="st">"L2"</span>,<span class="st">"L3"</span>,<span class="st">"L4"</span>,<span class="st">"L5"</span>,<span class="st">"L6"</span>,<span class="st">"WM"</span>,<span class="st">"none"</span>)))</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean-variance model</span></span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>top_3k_mv <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv[top_hvgs_mv,]) <span class="sc">|&gt;</span></span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(ensembl)</span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>dlpfc_mv_is <span class="ot">=</span> <span class="fu">semi_join</span>(</span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>    dlpfc_layer_marker[,<span class="fu">c</span>(<span class="st">"gene"</span>,<span class="st">"ensembl"</span>,<span class="st">"domain_simple"</span>)], </span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>    top_3k_mv, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>gene)</span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>dlpfc_mv_not <span class="ot">=</span> <span class="fu">anti_join</span>(</span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(top_3k_mv, </span>
-<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>        ensembl <span class="sc">%in%</span> <span class="fu">setdiff</span>(top_hvgs_mv, dlpfc_mv_is<span class="sc">$</span>ensembl)), </span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    dlpfc_mv_is, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="st">"none"</span>)</span>
-<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>dlpfc_mv_3k <span class="ot">=</span> <span class="fu">rbind</span>(dlpfc_mv_is, dlpfc_mv_not) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="fu">factor</span>(domain_simple,</span>
-<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"L1"</span>,<span class="st">"L2"</span>,<span class="st">"L3"</span>,<span class="st">"L4"</span>,<span class="st">"L5"</span>,<span class="st">"L6"</span>,<span class="st">"WM"</span>,<span class="st">"none"</span>)))</span>
-<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean-variance model - Pois</span></span>
-<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>top_3k_mvpois <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mvpois[top_hvgs_mvpois,]) <span class="sc">|&gt;</span></span>
-<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(ensembl)</span>
-<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>dlpfc_mvpois_is <span class="ot">=</span> <span class="fu">semi_join</span>(</span>
-<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>    dlpfc_layer_marker[,<span class="fu">c</span>(<span class="st">"gene"</span>,<span class="st">"ensembl"</span>,<span class="st">"domain_simple"</span>)], </span>
-<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>    top_3k_mvpois, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>gene)</span>
-<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>dlpfc_mvpois_not <span class="ot">=</span> <span class="fu">anti_join</span>(</span>
-<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(top_3k_mvpois, </span>
-<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>        ensembl <span class="sc">%in%</span> <span class="fu">setdiff</span>(top_hvgs_mvpois, dlpfc_mvpois_is<span class="sc">$</span>ensembl)), </span>
-<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>    dlpfc_mvpois_is, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="st">"none"</span>)</span>
-<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a>dlpfc_mvpois_3k <span class="ot">=</span> <span class="fu">rbind</span>(dlpfc_mvpois_is, dlpfc_mvpois_not) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="fu">factor</span>(domain_simple,</span>
-<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"L1"</span>,<span class="st">"L2"</span>,<span class="st">"L3"</span>,<span class="st">"L4"</span>,<span class="st">"L5"</span>,<span class="st">"L6"</span>,<span class="st">"WM"</span>,<span class="st">"none"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dlpfc_layer_marker <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/TableS8_filtered-layer-markers.csv"</span>,</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">row.names =</span> <span class="dv">1</span>, <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Binomial deviance model</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>top_bd_3k <span class="ot">&lt;-</span> bd_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(rank <span class="sc">&lt;=</span> <span class="dv">3000</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>dlpfc_bd_is <span class="ot">&lt;-</span> <span class="fu">semi_join</span>(</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    dlpfc_layer_marker[,<span class="fu">c</span>(<span class="st">"gene"</span>,<span class="st">"ensembl"</span>,<span class="st">"domain_simple"</span>)], </span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    top_bd_3k, <span class="at">by=</span><span class="fu">c</span>(<span class="st">"ensembl"</span><span class="ot">=</span><span class="st">"gene"</span>))</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>dlpfc_bd_not <span class="ot">=</span> <span class="fu">anti_join</span>(</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    top_bd_3k <span class="sc">|&gt;</span> <span class="fu">filter</span>(gene <span class="sc">%in%</span> <span class="fu">setdiff</span>(top_bd_3k<span class="sc">$</span>gene, dlpfc_bd_is<span class="sc">$</span>ensembl)),</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    dlpfc_bd_is, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"gene"</span> <span class="ot">=</span> <span class="st">"ensembl"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="st">"none"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">ensembl =</span> gene, <span class="at">gene =</span> gene_name) <span class="sc">|&gt;</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(ensembl, gene, domain_simple) <span class="co"># not included in DLPFC marker table</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>dlpfc_bd_3k <span class="ot">&lt;-</span> <span class="fu">rbind</span>(dlpfc_bd_is, dlpfc_bd_not) <span class="sc">|&gt;</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple=</span><span class="fu">factor</span>(domain_simple,</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">levels=</span><span class="fu">c</span>(<span class="st">"L1"</span>,<span class="st">"L2"</span>,<span class="st">"L3"</span>,<span class="st">"L4"</span>,<span class="st">"L5"</span>,<span class="st">"L6"</span>,<span class="st">"WM"</span>,<span class="st">"none"</span>)))</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean-variance model</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>top_3k_mv <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mv[top_hvgs_mv,]) <span class="sc">|&gt;</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(ensembl)</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>dlpfc_mv_is <span class="ot">=</span> <span class="fu">semi_join</span>(</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    dlpfc_layer_marker[,<span class="fu">c</span>(<span class="st">"gene"</span>,<span class="st">"ensembl"</span>,<span class="st">"domain_simple"</span>)], </span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    top_3k_mv, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>gene)</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>dlpfc_mv_not <span class="ot">=</span> <span class="fu">anti_join</span>(</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(top_3k_mv, </span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>        ensembl <span class="sc">%in%</span> <span class="fu">setdiff</span>(top_hvgs_mv, dlpfc_mv_is<span class="sc">$</span>ensembl)), </span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>    dlpfc_mv_is, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="st">"none"</span>)</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>dlpfc_mv_3k <span class="ot">=</span> <span class="fu">rbind</span>(dlpfc_mv_is, dlpfc_mv_not) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="fu">factor</span>(domain_simple,</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"L1"</span>,<span class="st">"L2"</span>,<span class="st">"L3"</span>,<span class="st">"L4"</span>,<span class="st">"L5"</span>,<span class="st">"L6"</span>,<span class="st">"WM"</span>,<span class="st">"none"</span>)))</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean-variance model - Pois</span></span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>top_3k_mvpois <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(mvpois[top_hvgs_mvpois,]) <span class="sc">|&gt;</span></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(ensembl)</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>dlpfc_mvpois_is <span class="ot">=</span> <span class="fu">semi_join</span>(</span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>    dlpfc_layer_marker[,<span class="fu">c</span>(<span class="st">"gene"</span>,<span class="st">"ensembl"</span>,<span class="st">"domain_simple"</span>)], </span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>    top_3k_mvpois, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>gene)</span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>dlpfc_mvpois_not <span class="ot">=</span> <span class="fu">anti_join</span>(</span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(top_3k_mvpois, </span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>        ensembl <span class="sc">%in%</span> <span class="fu">setdiff</span>(top_hvgs_mvpois, dlpfc_mvpois_is<span class="sc">$</span>ensembl)), </span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>    dlpfc_mvpois_is, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"ensembl"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="st">"none"</span>)</span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a>dlpfc_mvpois_3k <span class="ot">=</span> <span class="fu">rbind</span>(dlpfc_mvpois_is, dlpfc_mvpois_not) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">domain_simple =</span> <span class="fu">factor</span>(domain_simple,</span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a>        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"L1"</span>,<span class="st">"L2"</span>,<span class="st">"L3"</span>,<span class="st">"L4"</span>,<span class="st">"L5"</span>,<span class="st">"L6"</span>,<span class="st">"WM"</span>,<span class="st">"none"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>These results further supported the selection of the binomial deviance model, as the 3000 most highly ranked features represented significant markers for all DLPFC cortical layers. In contrast, the 3000 most highly ranked features from the mean-variance model were overwhelmingly L1 and white matter (WM) markers.</p>
 <p><em>Fig4. Binomial deviance model better corresponds to known DLPFC layer markers</em></p>
@@ -1068,8 +1056,8 @@ ENSG00000187730  548 0.000000e+00 0.000000e+00</code></pre>
 <section id="r-session-information" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="r-session-information"><code>R</code> session information</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Session info</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Session info</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.4.2 (2024-10-31)
 Platform: aarch64-apple-darwin20
@@ -1090,71 +1078,74 @@ attached base packages:
 [8] base     
 
 other attached packages:
- [1] gt_0.11.1                   ggbreak_0.1.4              
- [3] ggspavis_1.12.0             lubridate_1.9.4            
- [5] forcats_1.0.0               stringr_1.5.1              
- [7] dplyr_1.1.4                 purrr_1.0.4                
- [9] readr_2.1.5                 tidyr_1.3.1                
-[11] tidyverse_2.0.0             tibble_3.2.1               
-[13] ggrepel_0.9.6               gridExtra_2.3              
-[15] ggplot2_3.5.1               scran_1.34.0               
-[17] scuttle_1.16.0              scry_1.18.0                
-[19] spatialLIBD_1.18.0          SpatialExperiment_1.16.0   
-[21] SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0
-[23] Biobase_2.66.0              GenomicRanges_1.58.0       
-[25] GenomeInfoDb_1.42.3         IRanges_2.40.1             
-[27] S4Vectors_0.44.0            BiocGenerics_0.52.0        
-[29] MatrixGenerics_1.18.1       matrixStats_1.5.0          
+ [1] ggpubr_0.6.0                gt_0.11.1                  
+ [3] ggbreak_0.1.4               ggspavis_1.12.0            
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.0.4                 readr_2.1.5                
+[11] tidyr_1.3.1                 tidyverse_2.0.0            
+[13] tibble_3.2.1                ggrepel_0.9.6              
+[15] gridExtra_2.3               ggplot2_3.5.1              
+[17] scran_1.34.0                scuttle_1.16.0             
+[19] scry_1.18.0                 spatialLIBD_1.18.0         
+[21] SpatialExperiment_1.16.0    SingleCellExperiment_1.28.1
+[23] SummarizedExperiment_1.36.0 Biobase_2.66.0             
+[25] GenomicRanges_1.58.0        GenomeInfoDb_1.42.3        
+[27] IRanges_2.40.1              S4Vectors_0.44.0           
+[29] BiocGenerics_0.52.0         MatrixGenerics_1.18.1      
+[31] matrixStats_1.5.0          
 
 loaded via a namespace (and not attached):
   [1] later_1.4.1              BiocIO_1.16.0            ggplotify_0.1.2         
   [4] bitops_1.0-9             filelock_1.0.3           fields_16.3.1           
-  [7] XML_3.99-0.18            lifecycle_1.0.4          edgeR_4.4.2             
- [10] doParallel_1.0.17        lattice_0.22-6           magrittr_2.0.3          
- [13] limma_3.62.2             plotly_4.10.4            sass_0.4.9              
- [16] rmarkdown_2.29           jquerylib_0.1.4          yaml_2.3.10             
- [19] metapod_1.14.0           httpuv_1.6.15            ggside_0.3.1            
- [22] spam_2.11-1              sessioninfo_1.2.3        cowplot_1.1.3           
- [25] DBI_1.2.3                RColorBrewer_1.1-3       golem_0.5.1             
- [28] maps_3.4.2.1             abind_1.4-8              zlibbioc_1.52.0         
- [31] RCurl_1.98-1.17          yulab.utils_0.2.0        rappdirs_0.3.3          
- [34] GenomeInfoDbData_1.2.13  irlba_2.3.5.1            dqrng_0.4.1             
- [37] codetools_0.2-20         DelayedArray_0.32.0      xml2_1.3.8              
- [40] DT_0.33                  tidyselect_1.2.1         aplot_0.2.5             
- [43] farver_2.1.2             UCSC.utils_1.2.0         ScaledMatrix_1.14.0     
- [46] viridis_0.6.5            shinyWidgets_0.9.0       BiocFileCache_2.14.0    
- [49] GenomicAlignments_1.42.0 jsonlite_1.9.1           BiocNeighbors_2.0.1     
- [52] scater_1.34.1            iterators_1.0.14         foreach_1.5.2           
- [55] tools_4.4.2              Rcpp_1.0.14              glue_1.8.0              
- [58] SparseArray_1.6.2        xfun_0.51                withr_3.0.2             
- [61] BiocManager_1.30.25      fastmap_1.2.0            bluster_1.16.0          
- [64] digest_0.6.37            rsvd_1.0.5               gridGraphics_0.5-1      
- [67] timechange_0.3.0         R6_2.6.1                 mime_0.13               
- [70] colorspace_2.1-1         RSQLite_2.3.9            config_0.3.2            
- [73] generics_0.1.3           data.table_1.17.0        rtracklayer_1.66.0      
- [76] httr_1.4.7               htmlwidgets_1.6.4        S4Arrays_1.6.0          
- [79] pkgconfig_2.0.3          gtable_0.3.6             blob_1.2.4              
- [82] XVector_0.46.0           htmltools_0.5.8.1        dotCall64_1.2           
- [85] scales_1.3.0             png_0.1-8                attempt_0.3.1           
- [88] ggfun_0.1.8              knitr_1.50               rstudioapi_0.17.1       
- [91] tzdb_0.5.0               rjson_0.2.23             curl_6.2.2              
- [94] cachem_1.1.0             BiocVersion_3.20.0       parallel_4.4.2          
- [97] vipor_0.4.7              AnnotationDbi_1.68.0     restfulr_0.0.15         
-[100] pillar_1.10.1            grid_4.4.2               vctrs_0.6.5             
-[103] promises_1.3.2           BiocSingular_1.22.0      dbplyr_2.5.0            
-[106] beachmat_2.22.0          xtable_1.8-4             cluster_2.1.8.1         
-[109] beeswarm_0.4.0           paletteer_1.6.0          evaluate_1.0.3          
-[112] magick_2.8.6             cli_3.6.4                locfit_1.5-9.12         
-[115] compiler_4.4.2           Rsamtools_2.22.0         rlang_1.1.5             
-[118] crayon_1.5.3             labeling_0.4.3           rematch2_2.1.2          
-[121] fs_1.6.5                 ggbeeswarm_0.7.2         stringi_1.8.4           
-[124] viridisLite_0.4.2        BiocParallel_1.40.0      munsell_0.5.1           
-[127] Biostrings_2.74.1        lazyeval_0.2.2           Matrix_1.7-3            
-[130] ExperimentHub_2.14.0     benchmarkme_1.0.8        patchwork_1.3.0         
-[133] hms_1.1.3                bit64_4.6.0-1            KEGGREST_1.46.0         
-[136] statmod_1.5.0            shiny_1.10.0             AnnotationHub_3.14.0    
-[139] igraph_2.1.4             memoise_2.0.1            bslib_0.9.0             
-[142] benchmarkmeData_1.0.4    bit_4.6.0               </code></pre>
+  [7] XML_3.99-0.18            lifecycle_1.0.4          rstatix_0.7.2           
+ [10] edgeR_4.4.2              doParallel_1.0.17        lattice_0.22-6          
+ [13] backports_1.5.0          magrittr_2.0.3           limma_3.62.2            
+ [16] plotly_4.10.4            sass_0.4.9               rmarkdown_2.29          
+ [19] jquerylib_0.1.4          yaml_2.3.10              metapod_1.14.0          
+ [22] httpuv_1.6.15            ggside_0.3.1             spam_2.11-1             
+ [25] sessioninfo_1.2.3        cowplot_1.1.3            DBI_1.2.3               
+ [28] RColorBrewer_1.1-3       golem_0.5.1              maps_3.4.2.1            
+ [31] abind_1.4-8              zlibbioc_1.52.0          RCurl_1.98-1.17         
+ [34] yulab.utils_0.2.0        rappdirs_0.3.3           GenomeInfoDbData_1.2.13 
+ [37] irlba_2.3.5.1            dqrng_0.4.1              codetools_0.2-20        
+ [40] DelayedArray_0.32.0      xml2_1.3.8               DT_0.33                 
+ [43] tidyselect_1.2.1         aplot_0.2.5              farver_2.1.2            
+ [46] UCSC.utils_1.2.0         ScaledMatrix_1.14.0      viridis_0.6.5           
+ [49] shinyWidgets_0.9.0       BiocFileCache_2.14.0     GenomicAlignments_1.42.0
+ [52] jsonlite_1.9.1           BiocNeighbors_2.0.1      Formula_1.2-5           
+ [55] scater_1.34.1            iterators_1.0.14         foreach_1.5.2           
+ [58] tools_4.4.2              Rcpp_1.0.14              glue_1.8.0              
+ [61] SparseArray_1.6.2        xfun_0.51                withr_3.0.2             
+ [64] BiocManager_1.30.25      fastmap_1.2.0            bluster_1.16.0          
+ [67] digest_0.6.37            rsvd_1.0.5               gridGraphics_0.5-1      
+ [70] timechange_0.3.0         R6_2.6.1                 mime_0.13               
+ [73] colorspace_2.1-1         RSQLite_2.3.9            config_0.3.2            
+ [76] generics_0.1.3           data.table_1.17.0        rtracklayer_1.66.0      
+ [79] httr_1.4.7               htmlwidgets_1.6.4        S4Arrays_1.6.0          
+ [82] pkgconfig_2.0.3          gtable_0.3.6             blob_1.2.4              
+ [85] XVector_0.46.0           htmltools_0.5.8.1        carData_3.0-5           
+ [88] dotCall64_1.2            scales_1.3.0             png_0.1-8               
+ [91] attempt_0.3.1            ggfun_0.1.8              knitr_1.50              
+ [94] rstudioapi_0.17.1        tzdb_0.5.0               rjson_0.2.23            
+ [97] curl_6.2.2               cachem_1.1.0             BiocVersion_3.20.0      
+[100] parallel_4.4.2           vipor_0.4.7              AnnotationDbi_1.68.0    
+[103] restfulr_0.0.15          pillar_1.10.1            grid_4.4.2              
+[106] vctrs_0.6.5              promises_1.3.2           car_3.1-3               
+[109] BiocSingular_1.22.0      dbplyr_2.5.0             beachmat_2.22.0         
+[112] xtable_1.8-4             cluster_2.1.8.1          beeswarm_0.4.0          
+[115] paletteer_1.6.0          evaluate_1.0.3           magick_2.8.6            
+[118] cli_3.6.4                locfit_1.5-9.12          compiler_4.4.2          
+[121] Rsamtools_2.22.0         rlang_1.1.5              crayon_1.5.3            
+[124] ggsignif_0.6.4           labeling_0.4.3           rematch2_2.1.2          
+[127] fs_1.6.5                 ggbeeswarm_0.7.2         stringi_1.8.4           
+[130] viridisLite_0.4.2        BiocParallel_1.40.0      munsell_0.5.1           
+[133] Biostrings_2.74.1        lazyeval_0.2.2           Matrix_1.7-3            
+[136] ExperimentHub_2.14.0     benchmarkme_1.0.8        patchwork_1.3.0         
+[139] hms_1.1.3                bit64_4.6.0-1            KEGGREST_1.46.0         
+[142] statmod_1.5.0            shiny_1.10.0             AnnotationHub_3.14.0    
+[145] broom_1.0.7              igraph_2.1.4             memoise_2.0.1           
+[148] bslib_0.9.0              benchmarkmeData_1.0.4    bit_4.6.0               </code></pre>
 </div>
 </div>
 

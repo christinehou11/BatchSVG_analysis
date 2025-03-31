@@ -126,16 +126,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Why</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./dataDrivenThreshold.html" rel="" target="">
- <span class="menu-text">How</span></a>
+    <a class="nav-link" href="./spatialLIBD_spe.html" rel="" target="">
+ <span class="menu-text">spatialLIBD</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="./humanHippocampus2024_sub4_spe.html" rel="" target="" aria-current="page">
  <span class="menu-text">humanHippocampus2024</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./spatialLIBD_spe.html" rel="" target="">
- <span class="menu-text">spatialLIBD</span></a>
   </li>  
 </ul>
             <div class="quarto-navbar-tools ms-auto">
@@ -526,7 +522,7 @@ imgData names(4): sample_id image_id data scaleFactor</code></pre>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>bias_both <span class="ot">&lt;-</span> <span class="fu">biasDetect</span>(<span class="at">list_batch_df =</span> list_batch_df, </span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">threshold =</span> <span class="st">"both"</span>, <span class="at">nSD_dev =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>), <span class="at">nSD_rank =</span> <span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">6</span>), <span class="at">plot_palette =</span> <span class="fu">c</span>(<span class="st">"Blues"</span>,<span class="st">"Purples"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">threshold =</span> <span class="st">"both"</span>, <span class="at">nSD_dev =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>), <span class="at">nSD_rank =</span> <span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">6</span>), <span class="at">plot_palette =</span> <span class="fu">c</span>(<span class="st">"YlOrRd"</span>,<span class="st">"Purples"</span>), <span class="at">plot_point_size =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">plot_point_shape =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">9</span>), <span class="at">plot_text_size =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="sample-id" class="level5">
 <h5 class="anchored" data-anchor-id="sample-id">Sample ID</h5>
@@ -569,13 +565,13 @@ imgData names(4): sample_id image_id data scaleFactor</code></pre>
 <p><em>Figure 2b. Spatial expression plots for dev_outlier = TRUE AND rank_outlier = TRUE</em></p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="humanHippocampus2024_sub4_spe_files/figure-html/sample id both expression plots-1.png" class="img-fluid" width="576"></p>
+<p><img src="humanHippocampus2024_sub4_spe_files/figure-html/sample id both expression plots-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 <p><em>Figure 2c. Spatial expression plots for dev_outlier = TRUE OR rank_outlier = TRUE</em></p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="humanHippocampus2024_sub4_spe_files/figure-html/sample id either expression plots-1.png" class="img-fluid" width="576"></p>
+<p><img src="humanHippocampus2024_sub4_spe_files/figure-html/sample id either expression plots-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 </section>
@@ -613,13 +609,13 @@ imgData names(4): sample_id image_id data scaleFactor</code></pre>
 <p><em>Figure 3b. Spatial expression plots for dev_outlier = TRUE AND rank_outlier = TRUE</em></p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="humanHippocampus2024_sub4_spe_files/figure-html/sex both expression plots-1.png" class="img-fluid" width="576"></p>
+<p><img src="humanHippocampus2024_sub4_spe_files/figure-html/sex both expression plots-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 <p><em>Figure 3c. Spatial expression plots for dev_outlier = TRUE OR rank_outlier = TRUE</em></p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="humanHippocampus2024_sub4_spe_files/figure-html/sex either expression plots-1.png" class="img-fluid" width="576"></p>
+<p><img src="humanHippocampus2024_sub4_spe_files/figure-html/sex either expression plots-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 </section>
@@ -657,8 +653,6 @@ imgData names(4): sample_id image_id data scaleFactor</code></pre>
 <section id="cluster-results" class="level3">
 <h3 class="anchored" data-anchor-id="cluster-results">Cluster results</h3>
 <p>We used the set of SVGs for sample ID to compare the cluster results before and after we remove the identified batch-related biased features using <code>BatchSVG</code> package. We performed <a href="https://www.nature.com/articles/s41467-023-35947-w">PRECAST</a> clustering to identify spatial domains after removing all sample-biased SVGs (n = 15) from the feature list.</p>
-<section id="old-svgs" class="level4">
-<h4 class="anchored" data-anchor-id="old-svgs">Old SVGs</h4>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># seurat list</span></span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>l2 <span class="ot">=</span> <span class="fu">unique</span>(spe_sub4<span class="sc">$</span>sample_id)</span>
@@ -686,7 +680,6 @@ imgData names(4): sample_id image_id data scaleFactor</code></pre>
 <span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a>PRECASTObj_old <span class="ot">&lt;-</span> <span class="fu">SelectModel</span>(PRECASTObj_old, <span class="at">criteria=</span><span class="st">"MBIC"</span>)</span>
 <span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a>seuInt_old <span class="ot">&lt;-</span> <span class="fu">IntegrateSpaData</span>(PRECASTObj_old, <span class="at">species =</span> <span class="st">"Human"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
 <section id="refined-svgs" class="level4">
 <h4 class="anchored" data-anchor-id="refined-svgs">Refined SVGs</h4>
 <div class="cell">
@@ -726,7 +719,7 @@ imgData names(4): sample_id image_id data scaleFactor</code></pre>
 <span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>col.pal1 <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#1f77b4FF"</span>,<span class="st">"#aec7e8FF"</span>,<span class="st">"#ffbb78FF"</span>,<span class="st">"#2ca02cFF"</span>,<span class="st">"#ff7f0eFF"</span>,<span class="st">"#d62728FF"</span>,<span class="st">"#ff9896FF"</span>)</span>
 <span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>col.pal2 <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#1f77b4FF"</span>,<span class="st">"#ffbb78FF"</span>,<span class="st">"#2ca02cFF"</span>,<span class="st">"#98df8aFF"</span>,<span class="st">"#ff7f0eFF"</span>,<span class="st">"#d62728FF"</span>,<span class="st">"#ff9896FF"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Comparing the clustering results, the refined SVGs led to a more coherent and biologically meaningful spatial domain segmentation. Specifically, in the original clustering (left), an additional “WM (2)” cluster appeared, likely due to batch-associated biases. After applying <code>BatchSVG</code> , this extra cluster was removed, and the CA1 region became more distinct, resolving ambiguity in its boundaries. The refined clustering thus provides improved spatial structure alignment, demonstrating the effectiveness of BatchSVG in enhancing spatial domain identification.</p>
+<p>Comparing the clustering results, the refined SVGs led to a more coherent and biologically meaningful spatial domain segmentation. Specifically, in the original clustering, an additional “WM (2)” cluster appeared, likely due to batch-associated biases. After applying <code>BatchSVG</code> , this extra cluster was removed, and the CA1 region became more distinct, resolving ambiguity in its boundaries. The refined clustering thus provides improved spatial structure alignment, demonstrating the effectiveness of BatchSVG in enhancing spatial domain identification.</p>
 <p><em>Figure 4a. PRECAST clusters: 2082 input features, K=7</em></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>c1 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_along</span>(l2), <span class="cf">function</span>(x) {</span>
@@ -783,7 +776,7 @@ other attached packages:
  [1] humanHippocampus2024_0.99.8 scater_1.34.1              
  [3] scuttle_1.16.0              gridExtra_2.3              
  [5] ggspavis_1.12.0             ggplot2_3.5.1              
- [7] BatchSVG_0.99.6             Seurat_5.2.1               
+ [7] BatchSVG_0.99.8             Seurat_5.2.1               
  [9] SeuratObject_5.0.2          sp_2.2-0                   
 [11] PRECAST_1.6.5               gtools_3.9.5               
 [13] here_1.0.1                  cowplot_1.1.3              
